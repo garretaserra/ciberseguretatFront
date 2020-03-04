@@ -10,11 +10,11 @@ export class MessageService {
   constructor(public http: HttpClient) { }
   url = environment.uri;
 
-  messagePost(message: String) : Observable<any>{
-    return this.http.post(this.url + '/message', {message: message});
+  messagePost(message: String) : Observable<string>{
+    return this.http.post<string>(this.url + '/message', {message: message}, {responseType: "text"});
   }
 
-  messageGet(message: String) : Observable<any>{
-    return this.http.get(this.url + '/message?message=' + message);
+  messageGet(message: String) : Observable<string>{
+    return this.http.get<string>(this.url + '/message?message=' + message, {responseType: "text"});
   }
 }

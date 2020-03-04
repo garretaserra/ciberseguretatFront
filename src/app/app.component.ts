@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {MessageService} from './services/message.service'
 
 @Component({
   selector: 'app-root',
@@ -10,11 +11,16 @@ export class AppComponent {
   inputText = "";
   responseText = "";
 
-  getButton(){
-
+  constructor(
+    private messageService: MessageService
+  ) {
   }
 
-  postButton() {
+  async getButton(){
+    this.responseText = await this.messageService.messageGet(this.inputText).toPromise()
+  }
 
+  async postButton() {
+    this.responseText = await this.messageService.messagePost(this.inputText).toPromise()
   }
 }
