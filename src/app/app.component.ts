@@ -10,8 +10,11 @@ export class AppComponent {
   inputText = "";
   responseText = "";
 
-  button(){
-    alert('Clicked button');
+  getButton(){
+
   }
 
+  postButton() {
+
+  }
 }
