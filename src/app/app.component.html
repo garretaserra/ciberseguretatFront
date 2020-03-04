@@ -1,13 +1,27 @@
+<mat-toolbar></mat-toolbar>
 <div>
-  <mat-form-field>
-    <textarea
-      matInput
-      cdkTextareaAutosize
-      #autosize="cdkTextareaAutosize"
-      cdkAutosizeMinRows="1"
-      cdkAutosizeMaxRows="5"></textarea>
-  </mat-form-field>
-</div>
-<div>
-  <button (click)="button()">Click me</button>
+  <div style="width: 40%">
+    <mat-form-field style="width: 100%">
+      <textarea [(ngModel)]="inputText"
+        matInput
+        cdkTextareaAutosize
+        #autosize="cdkTextareaAutosize"
+        cdkAutosizeMinRows="3"
+        cdkAutosizeMaxRows="5"></textarea>
+    </mat-form-field>
+  </div>
+  <div>
+    <button mat-button style="margin: auto" (click)="button()">GET</button>
+    <button mat-button style="margin: auto" (click)="button()">POST</button>
+  </div>
+  <div style="width: 40%">
+    <mat-form-field style="width: 100%">
+      <textarea [(ngModel)]="responseText"
+                matInput
+                cdkTextareaAutosize
+                #autosize="cdkTextareaAutosize"
+                cdkAutosizeMinRows="3"
+                cdkAutosizeMaxRows="5"></textarea>
+    </mat-form-field>
+  </div>
 </div>
