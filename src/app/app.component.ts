@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {TextFieldModule} from '@angular/cdk/text-field';
 
 @Component({
   selector: 'app-root',
@@ -7,4 +8,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'ciberseguretatFront';
+
+  button(){
+    alert('Clicked button');
+  }
+
 }
