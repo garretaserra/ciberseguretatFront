@@ -17,10 +17,10 @@ export class AppComponent {
   }
 
   async getButton(){
-    this.responseText = await this.messageService.messageGet(this.inputText).toPromise()
+    this.responseText = (await this.messageService.messageGet(this.inputText).toPromise()).message
   }
 
   async postButton() {
-    this.responseText = await this.messageService.messagePost(this.inputText).toPromise()
+    this.responseText = (await this.messageService.messagePost(this.inputText).toPromise()).message
   }
 }
