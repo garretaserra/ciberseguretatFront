@@ -1,5 +1,7 @@
 import { Component } from '@angular/core';
-import {MessageService} from './services/message.service'
+import {MessageService} from './services/message.service';
+// @ts-ignore
+import my_rsa from "my_rsa";
 
 @Component({
   selector: 'app-root',
@@ -9,10 +11,11 @@ import {MessageService} from './services/message.service'
 export class AppComponent {
   inputText = "";
   responseText = "";
-
   constructor(
     private messageService: MessageService
   ) {
+    let s = new my_rsa();
+    console.log(s.encrypt(my_rsa.encodeString('hola')))
   }
 
   async getButton(){
