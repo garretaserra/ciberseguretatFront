@@ -7,7 +7,6 @@ import {MessageService} from './services/message.service'
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'ciberseguretatFront';
   inputText = "";
   responseText = "";
 

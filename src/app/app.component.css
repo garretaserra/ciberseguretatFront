@@ -1,0 +1,17 @@
+.full-width{
+  width: 100%;
+}
+
+.toolbar{
+  background: #673ab7;
+  color: white
+}
+
+.left-element{
+  margin-left: 20%;
+  float: left;
+}
+.right-element{
+  margin-right: 20%;
+  float: right;
+}

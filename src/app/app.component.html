@@ -1,27 +1,39 @@
-<mat-toolbar></mat-toolbar>
-<div>
-  <div style="width: 40%">
-    <mat-form-field style="width: 100%">
-      <textarea [(ngModel)]="inputText"
-        matInput
-        cdkTextareaAutosize
-        #autosize="cdkTextareaAutosize"
-        cdkAutosizeMinRows="3"
-        cdkAutosizeMaxRows="5"></textarea>
+<mat-toolbar class="toolbar">Cybersecurity</mat-toolbar>
+
+<mat-grid-list cols="2">
+  <mat-grid-tile>
+      <div class="full-width">
+        <div style=" width: 80%; margin: auto;">
+          <mat-form-field class="full-width">
+            <textarea [(ngModel)]="inputText"
+                      matInput
+                      cdkTextareaAutosize
+                      #autosize="cdkTextareaAutosize"
+                      cdkAutosizeMinRows="3"
+                      cdkAutosizeMaxRows="5"></textarea>
+          </mat-form-field>
+        </div>
+        <div class="full-width">
+          <div class="left-element">
+            <button mat-raised-button style="margin: auto" (click)="getButton()">GET</button>
+          </div>
+          <div class="right-element">
+            <button mat-raised-button style="margin: auto" (click)="postButton()">POST</button>
+          </div>
+        </div>
+      </div>
+  </mat-grid-tile>
+
+  <mat-grid-tile>
+    <mat-form-field style="width: 80%">
+    <textarea [(ngModel)]="responseText"
+              matInput
+              cdkTextareaAutosize
+              #autosize="cdkTextareaAutosize"
+              cdkAutosizeMinRows="3"
+              cdkAutosizeMaxRows="5"></textarea>
     </mat-form-field>
-  </div>
-  <div>
-    <button mat-raised-button style="margin: auto" (click)="getButton()">GET</button>
-    <button mat-raised-button style="margin: auto" (click)="postButton()">POST</button>
-  </div>
-  <div style="width: 40%">
-    <mat-form-field style="width: 100%">
-      <textarea [(ngModel)]="responseText"
-                matInput
-                cdkTextareaAutosize
-                #autosize="cdkTextareaAutosize"
-                cdkAutosizeMinRows="3"
-                cdkAutosizeMaxRows="5"></textarea>
-    </mat-form-field>
-  </div>
-</div>
+  </mat-grid-tile>
+
+</mat-grid-list>
+
