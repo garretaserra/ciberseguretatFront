@@ -9,8 +9,11 @@ import my_rsa from "my_rsa";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  inputText = "";
-  responseText = "";
+  testInputText = "";
+  testResponseText = "";
+
+  publicKey = "";
+  
   constructor(
     private messageService: MessageService
   ) {
@@ -19,10 +22,10 @@ export class AppComponent {
   }
 
   async getButton(){
-    this.responseText = (await this.messageService.messageGet(this.inputText).toPromise()).message
+    this.testResponseText = (await this.messageService.messageGet(this.testInputText).toPromise()).message
   }
 
   async postButton() {
-    this.responseText = (await this.messageService.messagePost(this.inputText).toPromise()).message
+    this.testResponseText = (await this.messageService.messagePost(this.testInputText).toPromise()).message
   }
 }
