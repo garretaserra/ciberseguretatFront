@@ -46,6 +46,18 @@
         <div class="full-width">
           <div style=" width: 80%; margin: auto;">
             <mat-form-field class="full-width">
+              <textarea [(ngModel)]="publicKey"
+                        matInput
+                        cdkTextareaAutosize
+                        #autosize="cdkTextareaAutosize"
+                        cdkAutosizeMinRows="1"
+                        cdkAutosizeMaxRows="5"></textarea>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="full-width">
+          <div style=" width: 80%; margin: auto;">
+            <mat-form-field class="full-width">
             <textarea [(ngModel)]="testInputText"
                       matInput
                       cdkTextareaAutosize
@@ -56,10 +68,10 @@
           </div>
           <div class="full-width">
             <div class="left-element">
-              <button mat-raised-button style="margin: auto" (click)="getButton()">Get Public Key</button>
+              <button mat-raised-button style="margin: auto" (click)="getPublicKeyButton()">Get Public Key</button>
             </div>
             <div class="right-element">
-              <button mat-raised-button style="margin: auto" (click)="postButton()">Send Message</button>
+              <button mat-raised-button style="margin: auto" (click)="postButton()">Get Blind Signature</button>
             </div>
           </div>
         </div>

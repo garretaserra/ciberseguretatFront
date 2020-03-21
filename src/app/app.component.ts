@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
-import {MessageService} from './services/message.service';
+import {GeneralService} from './services/general.service';
 // @ts-ignore
-import my_rsa from "my_rsa";
+import my_rsa from 'my_rsa';
 
 @Component({
   selector: 'app-root',
@@ -9,23 +9,34 @@ import my_rsa from "my_rsa";
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  testInputText = "";
-  testResponseText = "";
+  testInputText = '';
+  testResponseText = '';
 
-  publicKey = "";
-  
+  publicKey = '';
+  blindSignatureRequest = '';
+  blindSignatureResponse = '';
+
   constructor(
-    private messageService: MessageService
+    private messageService: GeneralService
   ) {
-    let s = new my_rsa();
-    console.log(s.encrypt(my_rsa.encodeString('hola')))
+    const s = new my_rsa();
+    console.log(s.encrypt(my_rsa.encodeString('hola')));
   }
 
-  async getButton(){
-    this.testResponseText = (await this.messageService.messageGet(this.testInputText).toPromise()).message
+  async getButton() {
+    this.testResponseText = (await this.messageService.messageGet(this.testInputText).toPromise()).message;
   }
 
   async postButton() {
-    this.testResponseText = (await this.messageService.messagePost(this.testInputText).toPromise()).message
+    this.testResponseText = (await this.messageService.messagePost(this.testInputText).toPromise()).message;
   }
+
+  async getPublicKeyButton() {
+    this.publicKey = await this.messageService.getPublicKey().toPromise();
+  }
+
+  async getBlindSignature() {
+
+  }
+
 }
