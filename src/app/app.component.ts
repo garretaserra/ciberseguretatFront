@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
 import {GeneralService} from './services/general.service';
+
 // @ts-ignore
 import my_rsa from 'my_rsa';
+import {bigintToHex, bufToBigint, hexToBigint, hexToBuf} from "bigint-conversion";
 
 @Component({
   selector: 'app-root',
@@ -32,11 +34,16 @@ export class AppComponent {
   }
 
   async getPublicKeyButton() {
-    this.publicKey = await this.messageService.getPublicKey().toPromise();
+    let response =  await this.messageService.getPublicKey().toPromise();
+    this.publicKey =JSON.stringify(response);
+    console.log("response ",response);
+    let object = JSON.parse(this.publicKey);
+    let n = hexToBigint(object.n);
+    let e = hexToBigint(object.e);
+    console.log("e " ,e, "n ",n);
   }
 
   async getBlindSignature() {
-
   }
 
 }

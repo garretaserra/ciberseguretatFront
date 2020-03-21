@@ -18,7 +18,7 @@ export class GeneralService {
     return this.http.get<any>(this.url + '?message=' + message);
   }
 
-  getPublicKey(): Observable<string> {
-    return this.http.get<string>(this.url + '/pubKey');
+  getPublicKey(): Observable<any> {
+    return this.http.get<any>(this.url + '/pubKey');
   }
 }
