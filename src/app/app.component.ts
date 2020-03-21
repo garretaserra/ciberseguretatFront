@@ -36,7 +36,6 @@ export class AppComponent {
   async getPublicKeyButton() {
     let response =  await this.messageService.getPublicKey().toPromise();
     this.publicKey =JSON.stringify(response);
-    console.log("response ",response);
     let object = JSON.parse(this.publicKey);
     let n = hexToBigint(object.n);
     let e = hexToBigint(object.e);
