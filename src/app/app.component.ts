@@ -1,9 +1,8 @@
 import { Component } from '@angular/core';
 import {GeneralService} from './services/general.service';
-
 // @ts-ignore
 import my_rsa from 'my_rsa';
-import {bigintToHex, bufToBigint, hexToBigint, hexToBuf} from "bigint-conversion";
+import {bigintToHex, bigintToText, hexToBigint, textToBigint} from 'bigint-conversion';
 
 @Component({
   selector: 'app-root',
@@ -11,38 +10,74 @@ import {bigintToHex, bufToBigint, hexToBigint, hexToBuf} from "bigint-conversion
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
+  rsa;
+
   testInputText = '';
   testResponseText = '';
 
-  publicKey = '';
+  serverPublicKey = '';
   blindSignatureRequest = '';
   blindSignatureResponse = '';
+  serverE;
+  serverN;
+  verifiedCheckBox = false;
+
 
   constructor(
-    private messageService: GeneralService
+    private generalService: GeneralService,
   ) {
-    const s = new my_rsa();
-    console.log(s.encrypt(my_rsa.encodeString('hola')));
+    this.rsa = new my_rsa();
   }
 
   async getButton() {
-    this.testResponseText = (await this.messageService.messageGet(this.testInputText).toPromise()).message;
+    this.testResponseText = (await this.generalService.messageGet(this.testInputText).toPromise()).message;
   }
 
   async postButton() {
-    this.testResponseText = (await this.messageService.messagePost(this.testInputText).toPromise()).message;
+    this.testResponseText = (await this.generalService.messagePost(this.testInputText).toPromise()).message;
   }
 
   async getPublicKeyButton() {
-    let response =  await this.messageService.getPublicKey().toPromise();
-    this.publicKey =JSON.stringify(response);
-    let object = JSON.parse(this.publicKey);
-    let n = hexToBigint(object.n);
-    let e = hexToBigint(object.e);
-    console.log("e " ,e, "n ",n);
+    const response =  await this.generalService.getPublicKey().toPromise();
+    this.serverPublicKey = JSON.stringify(response);
+    const object = JSON.parse(this.serverPublicKey);
+    this.serverN = hexToBigint(object.n);
+    this.serverE = hexToBigint(object.e);
   }
 
   async getBlindSignature() {
+    const message = textToBigint(this.blindSignatureRequest);
+    if (!message) {
+      alert('No message');
+      return ;
+    }
+
+    if (!(this.serverE && this.serverN)) {
+      alert('Get public key first');
+      return ;
+    }
+
+    const res = my_rsa.blind(message, this.serverE, this.serverN);
+    const blindedMessage = bigintToHex(res.blindedMessage);
+    const r = res.r;
+
+    // Make blind signature request to server
+    let blindedSignature = (await this.generalService.signMessage(blindedMessage).toPromise()).signature;
+
+    // UnBlind signature
+    blindedSignature = hexToBigint(blindedSignature);
+    const signature = my_rsa.unBlind(blindedSignature, r, this.serverN);
+    this.blindSignatureResponse = bigintToHex(signature);
+
+    // Signature Verification
+    const verification = my_rsa.verify(signature, this.serverE, this.serverN);
+    const checkMessage = bigintToText(verification);
+    if (checkMessage === this.blindSignatureRequest) {
+      this.verifiedCheckBox = true;
+    }
   }
 
+  doNothing(event: Event) {
+    event.preventDefault();
+  }
 }

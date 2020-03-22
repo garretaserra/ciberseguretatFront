@@ -46,7 +46,7 @@
         <div class="full-width">
           <div style=" width: 80%; margin: auto;">
             <mat-form-field class="full-width">
-              <textarea [(ngModel)]="publicKey"
+              <textarea [(ngModel)]="serverPublicKey"
                         matInput
                         cdkTextareaAutosize
                         #autosize="cdkTextareaAutosize"
@@ -58,7 +58,7 @@
         <div class="full-width">
           <div style=" width: 80%; margin: auto;">
             <mat-form-field class="full-width">
-            <textarea [(ngModel)]="testInputText"
+            <textarea [(ngModel)]="blindSignatureRequest"
                       matInput
                       cdkTextareaAutosize
                       #autosize="cdkTextareaAutosize"
@@ -71,7 +71,7 @@
               <button mat-raised-button style="margin: auto" (click)="getPublicKeyButton()">Get Public Key</button>
             </div>
             <div class="right-element">
-              <button mat-raised-button style="margin: auto" (click)="postButton()">Get Blind Signature</button>
+              <button mat-raised-button style="margin: auto" (click)="getBlindSignature()">Get Blind Signature</button>
             </div>
           </div>
         </div>
@@ -79,12 +79,13 @@
 
       <mat-grid-tile>
         <mat-form-field style="width: 80%">
-    <textarea [(ngModel)]="testResponseText"
+    <textarea [(ngModel)]="blindSignatureResponse"
               matInput
               cdkTextareaAutosize
               #autosize="cdkTextareaAutosize"
               cdkAutosizeMinRows="3"
               cdkAutosizeMaxRows="5"></textarea>
+          <mat-checkbox [(ngModel)]="verifiedCheckBox" disableRipple="true" (click)="doNothing($event)">Verified</mat-checkbox>
         </mat-form-field>
       </mat-grid-tile>
 

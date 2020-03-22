@@ -21,4 +21,8 @@ export class GeneralService {
   getPublicKey(): Observable<any> {
     return this.http.get<any>(this.url + '/pubKey');
   }
+
+  signMessage(message): Observable<any> {
+    return this.http.post<any>(this.url + '/sign', message);
+  }
 }
