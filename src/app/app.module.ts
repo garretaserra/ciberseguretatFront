@@ -13,24 +13,26 @@ import {MatGridListModule} from "@angular/material/grid-list";
 import {MatTabsModule} from "@angular/material/tabs";
 import {MatCheckboxModule} from '@angular/material';
 import {ChatService} from './services/chat.service'
+import {MatListModule} from "@angular/material/list";
 
 @NgModule({
   declarations: [
     AppComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatInputModule,
-        MatToolbarModule,
-        FormsModule,
-        MatButtonModule,
-        HttpClientModule,
-        MatGridListModule,
-        MatTabsModule,
-        MatCheckboxModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatToolbarModule,
+    FormsModule,
+    MatButtonModule,
+    HttpClientModule,
+    MatGridListModule,
+    MatTabsModule,
+    MatCheckboxModule,
+    MatListModule
+  ],
   providers: [ChatService],
   bootstrap: [AppComponent]
 })

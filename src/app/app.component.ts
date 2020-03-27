@@ -13,9 +13,11 @@ import {ChatService} from "./services/chat.service";
 export class AppComponent {
   rsa;
 
+  //Test Server
   testInputText = '';
   testResponseText = '';
 
+  //Blind signature
   serverPublicKey = '';
   blindSignatureRequest = '';
   blindSignatureResponse = '';
@@ -23,6 +25,11 @@ export class AppComponent {
   serverN;
   verifiedCheckBox = false;
 
+  //No Repudiation
+  username = '';
+  userList = [];
+  selectedUser: any = '';
+  noRepudiationMessage = '';
 
   constructor(
     private generalService: GeneralService,
@@ -32,9 +39,8 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.ChatService.getMessages().subscribe((message: String)=>{
-      console.log(message);
-    })
+    this.handleNewUsers();
+    this.handlePrivateMessages();
   }
 
   async getButton() {
@@ -92,10 +98,60 @@ export class AppComponent {
     event.preventDefault();
   }
 
-  emmit() {
-    this.ChatService.login();
+  login() {
+    this.ChatService.login(this.username);
   }
 
-  getConnectedList(){}
+  selectUser(user) {
+    this.selectedUser = user;
+  }
 
+  handleNewUsers(){
+    this.ChatService.getConnected().subscribe((message: string)=>{
+      console.log(JSON.parse(message));
+      this.userList = JSON.parse(message);
+      this.userList = this.userList.filter((user)=>{
+        if(user.username !== this.username)
+          return user
+      })
+    })
+  }
+
+  startNonRepudiableMessage(){
+    const m = this.noRepudiationMessage;
+    //TODO: Symmetrically encrypt message c=m+k
+
+    //Temporary until above is completed
+    let c = m;
+
+    //Build message
+    let message1 = {
+      messageType: 'noRepudiation1',
+      body:{
+        origin: this.username,
+        destination: this.selectedUser.username,
+        c: c,
+        timestamp: 'put timestamp here'
+      },
+      signature: 'this will be a signature of the body'
+    };
+
+    this.ChatService.sendNonRepudiableMessage(message1, this.selectedUser.id);
+  }
+
+  handlePrivateMessages(){
+    this.ChatService.privateMessages().subscribe((message: any)=>{
+      console.log('received message ', message);
+      if(message.messageType === 'noRepudiation1')
+        this.answerNonRepudiableMessage(message);
+    })
+  }
+
+  answerNonRepudiableMessage(message){
+    //TODO: Check signature of message sender
+
+    //TODO: Sign the message
+    console.log('answer', message)
+
+  }
 }
