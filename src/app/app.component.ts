@@ -31,6 +31,12 @@ export class AppComponent {
     this.rsa = new my_rsa();
   }
 
+  ngOnInit() {
+    this.ChatService.getMessages().subscribe((message: String)=>{
+      console.log(message);
+    })
+  }
+
   async getButton() {
     this.testResponseText = (await this.generalService.messageGet(this.testInputText).toPromise()).message;
   }
@@ -59,8 +65,10 @@ export class AppComponent {
       return ;
     }
 
+    //Blind message
     const res = my_rsa.blind(message, this.serverE, this.serverN);
     const blindedMessage = bigintToHex(res.blindedMessage);
+    //Get r for unblinding
     const r = res.r;
 
     // Make blind signature request to server
@@ -69,9 +77,10 @@ export class AppComponent {
     // UnBlind signature
     blindedSignature = hexToBigint(blindedSignature);
     const signature = my_rsa.unBlind(blindedSignature, r, this.serverN);
+    //Get hex value of the blinded signature so it can be displayed
     this.blindSignatureResponse = bigintToHex(signature);
 
-    // Signature Verification
+    // Verify that the server has signed the message
     const verification = my_rsa.verify(signature, this.serverE, this.serverN);
     const checkMessage = bigintToText(verification);
     if (checkMessage === this.blindSignatureRequest) {
@@ -82,4 +91,11 @@ export class AppComponent {
   doNothing(event: Event) {
     event.preventDefault();
   }
+
+  emmit() {
+    this.ChatService.login();
+  }
+
+  getConnectedList(){}
+
 }
