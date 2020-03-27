@@ -12,6 +12,7 @@ import {HttpClientModule} from "@angular/common/http";
 import {MatGridListModule} from "@angular/material/grid-list";
 import {MatTabsModule} from "@angular/material/tabs";
 import {MatCheckboxModule} from '@angular/material';
+import {ChatService} from './services/chat.service'
 
 @NgModule({
   declarations: [
@@ -30,7 +31,7 @@ import {MatCheckboxModule} from '@angular/material';
         MatTabsModule,
         MatCheckboxModule
     ],
-  providers: [],
+  providers: [ChatService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

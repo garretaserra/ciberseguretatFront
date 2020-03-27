@@ -3,6 +3,7 @@ import {GeneralService} from './services/general.service';
 // @ts-ignore
 import my_rsa from 'my_rsa';
 import {bigintToHex, bigintToText, hexToBigint, textToBigint} from 'bigint-conversion';
+import {ChatService} from "./services/chat.service";
 
 @Component({
   selector: 'app-root',
@@ -25,6 +26,7 @@ export class AppComponent {
 
   constructor(
     private generalService: GeneralService,
+    private ChatService: ChatService
   ) {
     this.rsa = new my_rsa();
   }
