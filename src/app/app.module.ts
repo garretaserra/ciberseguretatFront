@@ -12,25 +12,35 @@ import {HttpClientModule} from "@angular/common/http";
 import {MatGridListModule} from "@angular/material/grid-list";
 import {MatTabsModule} from "@angular/material/tabs";
 import {MatCheckboxModule} from '@angular/material';
-import {ChatService} from './services/chat.service'
+import {ChatService} from './services/chat.service';
+import {MatDividerModule} from '@angular/material/divider';
+import {MatListModule} from "@angular/material/list";
+import {MatCardModule} from "@angular/material/card";
+import {MatIconModule} from "@angular/material/icon";
+import {MatButtonToggleModule} from "@angular/material/button-toggle";
 
 @NgModule({
   declarations: [
     AppComponent
   ],
-    imports: [
-        BrowserModule,
-        AppRoutingModule,
-        BrowserAnimationsModule,
-        MatInputModule,
-        MatToolbarModule,
-        FormsModule,
-        MatButtonModule,
-        HttpClientModule,
-        MatGridListModule,
-        MatTabsModule,
-        MatCheckboxModule
-    ],
+  imports: [
+    BrowserModule,
+    AppRoutingModule,
+    BrowserAnimationsModule,
+    MatInputModule,
+    MatToolbarModule,
+    FormsModule,
+    MatButtonModule,
+    HttpClientModule,
+    MatGridListModule,
+    MatTabsModule,
+    MatCheckboxModule,
+    MatDividerModule,
+    MatListModule,
+    MatCardModule,
+    MatIconModule,
+    MatButtonToggleModule
+  ],
   providers: [ChatService],
   bootstrap: [AppComponent]
 })
