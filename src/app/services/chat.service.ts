@@ -15,8 +15,8 @@ export class ChatService {
     this.socket = io(this.url);
   }
 
-  login(userName){
-    this.socket.emit('login', userName);
+  login(userName, publicKey){
+    this.socket.emit('login', userName, publicKey);
   }
 
   public getConnected = () => {
@@ -27,7 +27,7 @@ export class ChatService {
     });
   };
 
-  sendNonRepudiableMessage(message, destination){
+  sendMessageToUser(message, destination){
     this.socket.emit('proxy', destination, message)
   }
 
@@ -38,4 +38,16 @@ export class ChatService {
       });
     });
   };
+
+  publishMessage(message){
+    this.socket.emit('publishNoRepudiation', message);
+  }
+
+  public receiveBroadcastsNoRepudiation = () => {
+    return new Observable((observer)=>{
+      this.socket.on('publish', (message) => {
+        observer.next(message);
+      })
+    })
+  }
 }
