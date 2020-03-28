@@ -15,19 +15,39 @@ export class ChatService {
     this.socket = io(this.url);
   }
 
-  login(){
-    this.socket.emit('login', 'this is a username')
+  login(userName, publicKey){
+    this.socket.emit('login', userName, publicKey);
   }
 
-  getConnectedList(){
-    this.socket.emit('getConnected')
-  }
-
-  public getMessages = () => {
+  public getConnected = () => {
     return new Observable((observer) => {
-      this.socket.on('', (message) => {
+      this.socket.on('userList', (message) => {
         observer.next(message);
       });
     });
+  };
+
+  sendMessageToUser(message, destination){
+    this.socket.emit('proxy', destination, message)
+  }
+
+  public privateMessages = () =>{
+    return new Observable((observer)=>{
+      this.socket.on('proxy', (message)=>{
+        observer.next(message);
+      });
+    });
+  };
+
+  publishMessage(message){
+    this.socket.emit('publishNoRepudiation', message);
+  }
+
+  public receiveBroadcastsNoRepudiation = () => {
+    return new Observable((observer)=>{
+      this.socket.on('publish', (message) => {
+        observer.next(message);
+      })
+    })
   }
 }

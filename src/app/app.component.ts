@@ -16,9 +16,11 @@ import {ChatService} from "./services/chat.service";
 export class AppComponent {
   rsa;
 
+  //Test Server
   testInputText = '';
   testResponseText = '';
 
+  //Blind signature
   serverPublicKey = '';
   blindSignatureRequest = '';
   blindSignatureResponse = '';
@@ -27,6 +29,11 @@ export class AppComponent {
   publicEText= '';
   verifiedCheckBox = false;
 
+  //No Repudiation
+  username = '';
+  userList = [];
+  selectedUser: any = '';
+  noRepudiationMessage = '';
 
   constructor(
     private generalService: GeneralService,
@@ -36,9 +43,9 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.ChatService.getMessages().subscribe((message: String)=>{
-      console.log(message);
-    })
+    this.handleNewUsers();
+    this.handlePrivateMessages();
+    this.handlePublishedMessages()
   }
 
   async getButton() {
@@ -107,10 +114,109 @@ export class AppComponent {
     event.preventDefault();
   }
 
-  emmit() {
-    this.ChatService.login();
+  login() {
+    this.ChatService.login(this.username, JSON.stringify({e: bigintToHex(this.rsa.publicKey.e), n: bigintToHex(this.rsa.publicKey.n)}));
   }
 
-  getConnectedList(){}
+  selectUser(user) {
+    this.selectedUser = user;
+  }
 
+  handleNewUsers(){
+    this.ChatService.getConnected().subscribe((message: string)=>{
+      this.userList = JSON.parse(message);
+      this.userList = this.userList.filter((user)=>{
+        user.publicKey = JSON.parse(user.publicKey);
+        if(user.username !== this.username)
+          return user;
+      });
+    })
+  }
+
+  startNonRepudiableMessage(){
+    if(!this.selectedUser){
+      alert('Need to select user');
+      return;
+    }
+
+    const m = this.noRepudiationMessage;
+    if(!m){
+      alert('Need message to send');
+      return;
+    }
+    //TODO: Symmetrically encrypt message c=m+k
+
+    //Temporary until above is completed
+    let c = m;
+
+    //Build message
+    let message = {
+      messageType: 'noRepudiation1',
+      body:{
+        origin: this.username,
+        destination: this.selectedUser.username,
+        c: c,
+        timestamp: 'put timestamp here'
+      },
+      signature: 'alice signature of the body'
+    };
+
+    this.ChatService.sendMessageToUser(message, this.selectedUser.id);
+  }
+
+  handlePrivateMessages(){
+    this.ChatService.privateMessages().subscribe((message: any)=>{
+      if(message.messageType === 'noRepudiation1')
+        this.answerNonRepudiableMessage(message);
+      else if (message.messageType === 'noRepudiation2')
+        this.publishNoRepudiationMessage(message);
+    })
+  }
+
+  answerNonRepudiableMessage(message){
+    //Receives fist message of No repudiation from Alice and sends answers with second message to Alice
+    //TODO: Check signature of message sender
+
+    //TODO: Sign the message
+
+    //refactoring message
+    message.body.destination = message.body.origin;
+    message.body.origin = this.username;
+    message.messageType = 'noRepudiation2';
+    message.signature = 'bob signature of the body';
+
+    //Find destination user
+    let dstUser;
+    this.userList.some((user)=>{
+      if(user.username === message.body.destination){
+        //Send message
+        this.ChatService.sendMessageToUser(message, user.id);
+        return true;
+      }
+    });
+  }
+
+  publishNoRepudiationMessage(message){
+    //Receives answer from Bob (2nd message of no repudiation) and sends message to publish to TTP (3rd message of no repudiation)
+
+    //TODO: Check signature
+
+    // Refactor message
+    message.messageType = 'noRepudiation3';
+    message.body.destination = 'TTP';
+    message.body.destination2 = message.body.origin;
+    message.body.origin = this.username;
+    message.body.k = 'symmetric key';
+
+    //TODO: Sign message body
+    message.signature = 'Pko';
+
+    this.ChatService.publishMessage(message);
+  }
+
+  handlePublishedMessages(){
+    this.ChatService.receiveBroadcastsNoRepudiation().subscribe((message: any)=>{
+      //TODO: Analyse published message to see if you are Alice or Bob and display info
+    })
+  }
 }
