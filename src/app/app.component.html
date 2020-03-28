@@ -6,155 +6,145 @@
         <div class="full-width">
           <div style=" width: 80%; margin: auto;">
             <mat-form-field class="full-width">
-            <textarea [(ngModel)]="testInputText"
-                      matInput
-                      cdkTextareaAutosize
-                      #autosize="cdkTextareaAutosize"
+            <textarea #autosize="cdkTextareaAutosize"
+                      [(ngModel)]="testInputText"
+                      cdkAutosizeMaxRows="5"
                       cdkAutosizeMinRows="3"
-                      cdkAutosizeMaxRows="5"></textarea>
+                      cdkTextareaAutosize
+                      matInput></textarea>
             </mat-form-field>
           </div>
           <div class="full-width">
             <div class="left-element">
-              <button mat-raised-button style="margin: auto" (click)="getButton()">GET</button>
+              <button (click)="getButton()" mat-raised-button style="margin: auto">GET</button>
             </div>
             <div class="right-element">
-              <button mat-raised-button style="margin: auto" (click)="postButton()">POST</button>
+              <button (click)="postButton()" mat-raised-button style="margin: auto">POST</button>
             </div>
           </div>
         </div>
       </mat-grid-tile>
-
       <mat-grid-tile>
         <mat-form-field style="width: 80%">
-    <textarea [(ngModel)]="testResponseText"
-              matInput
-              cdkTextareaAutosize
-              #autosize="cdkTextareaAutosize"
+    <textarea #autosize="cdkTextareaAutosize"
+              [(ngModel)]="testResponseText"
+              cdkAutosizeMaxRows="5"
               cdkAutosizeMinRows="3"
-              cdkAutosizeMaxRows="5"></textarea>
+              cdkTextareaAutosize
+              matInput></textarea>
         </mat-form-field>
       </mat-grid-tile>
-
     </mat-grid-list>
-
   </mat-tab>
-<!--------------------------------------------------------------------------------->
+  <!--------------------------------------------------------------------------------->
   <mat-tab label="Blind Signature">
-      <mat-grid-list cols="2" rowHeight="1000">
+    <mat-grid-list cols="2" rowHeight="1000">
+      <mat-grid-tile style="display: inherit">
+        <div style="align-content: initial; width: 90%; height: 100%; padding-top: 10px">
+          <mat-list style="display: inherit">
+            <div class="mat-list-item">
+              <div style="padding-top: 0; margin: auto; align-content: initial; width: 100%;">
+                <mat-list-item style="height: auto;padding-top: 10px">
+                  <mat-card style="background: #673ab747;height: 100%; margin: auto; padding: 10px">
+                    <mat-card-title> Public Key
+                    </mat-card-title>
+                    <div style="margin:auto">
 
-          <mat-grid-tile style="display: inherit">
-              <div style="align-content: initial; width: 70%; height: 100%; padding-top: 10px">
-                <mat-list style="display: inherit">
-                  <div class="mat-list-item">
-                    <div style="padding-top: 0; margin: auto; align-content: initial; width: 100%;">
-                      <mat-list-item style="height: auto;padding-top: 10px">
-                        <mat-card style="background: #673ab747;height: 100%; margin: auto; padding: 10px">
-                          <mat-card-title> Public Key
-                          </mat-card-title>
-                        <div style="margin:auto">
-
-                          <mat-form-field class="full-width">
-                             <textarea [(ngModel)]="serverN"
-                                       matInput
-                                       cdkTextareaAutosize
-                                       #autosize="cdkTextareaAutosize"
+                      <mat-form-field class="full-width">
+                             <textarea #autosize="cdkTextareaAutosize"
+                                       [(ngModel)]="serverN"
+                                       cdkAutosizeMaxRows="5"
                                        cdkAutosizeMinRows="1"
-                                       cdkAutosizeMaxRows="5"></textarea>
-                          </mat-form-field>
-
-                          <mat-form-field class="full-width">
-                             <textarea [(ngModel)]="publicEText"
-                                       matInput
                                        cdkTextareaAutosize
-                                       #autosize="cdkTextareaAutosize"
+                                       matInput></textarea>
+                      </mat-form-field>
+
+                      <mat-form-field class="full-width">
+                             <textarea #autosize="cdkTextareaAutosize"
+                                       [(ngModel)]="publicEText"
+                                       cdkAutosizeMaxRows="5"
                                        cdkAutosizeMinRows="1"
-                                       cdkAutosizeMaxRows="5"></textarea>
-                          </mat-form-field>
+                                       cdkTextareaAutosize
+                                       matInput></textarea>
+                      </mat-form-field>
 
-                          <mat-button-toggle-group (valueChange)="updateValueE($event)" #group="matButtonToggleGroup">
-                            <mat-button-toggle value="Dec" >Decimal
-                            </mat-button-toggle>
-                            <mat-button-toggle value="Hex" >Hexadecimal
-                            </mat-button-toggle>
-                          </mat-button-toggle-group>
+                      <mat-button-toggle-group #group="matButtonToggleGroup" (valueChange)="updateValueE($event)">
+                        <mat-button-toggle value="Dec" >Decimal
+                        </mat-button-toggle>
+                        <mat-button-toggle value="Hex" >Hexadecimal
+                        </mat-button-toggle>
+                      </mat-button-toggle-group>
 
-                          <div class="example-selected-value">Selected value of e: {{group.value}}</div>
+                      <div class="example-selected-value">Selected value of e: {{group.value}}</div>
 
-                          <button mat-raised-button  style="margin: auto" (click)="getPublicKeyButton()">Get Public Key</button>
-
-                        </div>
-                        </mat-card>
-                      </mat-list-item>
-                      <mat-divider> </mat-divider>
-                      <mat-list-item style="height: auto; padding-top: 10px">
-                        <mat-card style="background: #673ab747; height: 100%; ">
-                          <mat-card-title> Blind Signature
-                          </mat-card-title>
-                          <mat-card-subtitle>Please write a message:</mat-card-subtitle>
-                        <div style="margin:auto">
-                          <mat-form-field class="full-width">
-                        <textarea [(ngModel)]="blindSignatureRequest"
-                                  matInput
-                                  cdkTextareaAutosize
-                                  #autosize="cdkTextareaAutosize"
-                                  cdkAutosizeMinRows="3"
-                                  cdkAutosizeMaxRows="5"></textarea>
-                        </mat-form-field>
-                          <button mat-raised-button  style="margin: auto" (click)="getBlindSignature()">Get Blind Signature</button>
-                        </div>
-                        </mat-card>
-                      </mat-list-item>
+                      <button (click)="getPublicKeyButton()"  mat-raised-button style="margin: auto">Get Public Key</button>
 
                     </div>
-                  </div>
+                  </mat-card>
+                </mat-list-item>
+                <mat-divider> </mat-divider>
+                <mat-list-item style="height: auto; padding-top: 10px">
+                  <mat-card style="background: #673ab747; height: 100%; ">
+                    <mat-card-title> Blind Signature
+                    </mat-card-title>
+                    <mat-card-subtitle>Please write a message:</mat-card-subtitle>
+                    <div style="margin:auto">
+                      <mat-form-field class="full-width">
+                        <textarea #autosize="cdkTextareaAutosize"
+                                  [(ngModel)]="blindSignatureRequest"
+                                  cdkAutosizeMaxRows="5"
+                                  cdkAutosizeMinRows="3"
+                                  cdkTextareaAutosize
+                                  matInput></textarea>
+                      </mat-form-field>
+                      <button (click)="getBlindSignature()"  mat-raised-button style="margin: auto">Get Blind Signature</button>
+                    </div>
+                  </mat-card>
+                </mat-list-item>
 
-                </mat-list>
               </div>
-        </mat-grid-tile>
+            </div>
 
-
-          <mat-grid-tile>
-            <mat-card style="background: #673ab747; height: 20%; width: 75%; margin: auto; padding: 10px">
-            <mat-form-field style="width: 80%">
-            <textarea [(ngModel)]="blindSignatureResponse"
-                      matInput
-                      cdkTextareaAutosize
-                      #autosize="cdkTextareaAutosize"
+          </mat-list>
+        </div>
+      </mat-grid-tile>
+      <mat-grid-tile>
+        <mat-card style="background: #673ab747; height: 20%; width: 75%; margin: auto; padding: 10px">
+          <mat-form-field style="width: 80%">
+            <textarea #autosize="cdkTextareaAutosize"
+                      [(ngModel)]="blindSignatureResponse"
+                      cdkAutosizeMaxRows="5"
                       cdkAutosizeMinRows="3"
-                      cdkAutosizeMaxRows="5"></textarea>
-              <mat-checkbox [(ngModel)]="verifiedCheckBox" disableRipple="true" (click)="doNothing($event)">Verified</mat-checkbox>
-            </mat-form-field>
-            </mat-card>
-          </mat-grid-tile>
-
-      </mat-grid-list>
-
-
+                      cdkTextareaAutosize
+                      matInput></textarea>
+            <mat-checkbox (click)="doNothing($event)" [(ngModel)]="verifiedCheckBox" disableRipple="true">Verified</mat-checkbox>
+          </mat-form-field>
+        </mat-card>
+      </mat-grid-tile>
+    </mat-grid-list>
   </mat-tab>
   <!--------------------------------------------------------------------------------->
   <mat-tab label="No Repudiation">
     <mat-form-field>
       <label>
-        <input matInput [(ngModel)]="username">
+        <input [(ngModel)]="username" matInput>
       </label>
     </mat-form-field>
-    <button mat-raised-button (click)=login()>Login</button>
+    <button (click)=login() mat-raised-button>Login</button>
     <mat-list>
       <mat-list-item (click)="selectUser(user)" *ngFor="let user of userList">
         {{user.username}}
       </mat-list-item>
     </mat-list>
     <mat-form-field style="width: 50%">
-    <textarea [(ngModel)]="noRepudiationMessage"
-              matInput
-              cdkTextareaAutosize
-              #autosize="cdkTextareaAutosize"
+    <textarea #autosize="cdkTextareaAutosize"
+              [(ngModel)]="noRepudiationMessage"
+              cdkAutosizeMaxRows="5"
               cdkAutosizeMinRows="3"
-              cdkAutosizeMaxRows="5"></textarea>
+              cdkTextareaAutosize
+              matInput></textarea>
     </mat-form-field>
-
-    <button mat-raised-button (click)="startNonRepudiableMessage()"> Send Non Repudiable Message</button>
+    <button (click)="startNonRepudiableMessage()" mat-raised-button> Send Non Repudiable Message</button>
   </mat-tab>
 </mat-tab-group>
 
