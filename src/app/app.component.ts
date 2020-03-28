@@ -100,7 +100,7 @@ export class AppComponent {
   }
 
   login() {
-    this.ChatService.login(this.username, this.rsa.publicKey);
+    this.ChatService.login(this.username, JSON.stringify({e: bigintToHex(this.rsa.publicKey.e), n: bigintToHex(this.rsa.publicKey.n)}));
   }
 
   selectUser(user) {
@@ -109,24 +109,33 @@ export class AppComponent {
 
   handleNewUsers(){
     this.ChatService.getConnected().subscribe((message: string)=>{
-      console.log(JSON.parse(message));
       this.userList = JSON.parse(message);
       this.userList = this.userList.filter((user)=>{
+        user.publicKey = JSON.parse(user.publicKey);
         if(user.username !== this.username)
-          return user
-      })
+          return user;
+      });
     })
   }
 
   startNonRepudiableMessage(){
+    if(!this.selectedUser){
+      alert('Need to select user');
+      return;
+    }
+
     const m = this.noRepudiationMessage;
+    if(!m){
+      alert('Need message to send');
+      return;
+    }
     //TODO: Symmetrically encrypt message c=m+k
 
     //Temporary until above is completed
     let c = m;
 
     //Build message
-    let message1 = {
+    let message = {
       messageType: 'noRepudiation1',
       body:{
         origin: this.username,
@@ -137,15 +146,14 @@ export class AppComponent {
       signature: 'alice signature of the body'
     };
 
-    this.ChatService.sendMessageToUser(message1, this.selectedUser.id);
+    this.ChatService.sendMessageToUser(message, this.selectedUser.id);
   }
 
   handlePrivateMessages(){
     this.ChatService.privateMessages().subscribe((message: any)=>{
-      console.log('received message ', message);
       if(message.messageType === 'noRepudiation1')
         this.answerNonRepudiableMessage(message);
-      else if (message.messageType === 'noReudiation2')
+      else if (message.messageType === 'noRepudiation2')
         this.publishNoRepudiationMessage(message);
     })
   }
@@ -155,7 +163,6 @@ export class AppComponent {
     //TODO: Check signature of message sender
 
     //TODO: Sign the message
-    console.log('answer', message);
 
     //refactoring message
     message.body.destination = message.body.origin;
