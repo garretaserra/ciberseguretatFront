@@ -2,6 +2,14 @@
   width: 100%;
 }
 
+.mat-figure{
+  display: inherit;
+}
+
+.mat-grid-tile{
+  display: inherit;
+}
+
 .toolbar{
   background: #673ab7;
   color: white
@@ -14,4 +22,7 @@
 .right-element{
   margin-right: 20%;
   float: right;
+}
+.example-selected-value {
+  margin: 15px 0;
 }

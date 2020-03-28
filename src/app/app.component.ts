@@ -5,11 +5,14 @@ import my_rsa from 'my_rsa';
 import {bigintToHex, bigintToText, hexToBigint, textToBigint} from 'bigint-conversion';
 import {ChatService} from "./services/chat.service";
 
+
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
+
 export class AppComponent {
   rsa;
 
@@ -23,6 +26,7 @@ export class AppComponent {
   blindSignatureResponse = '';
   serverE;
   serverN;
+  publicEText= '';
   verifiedCheckBox = false;
 
   //No Repudiation
@@ -58,6 +62,17 @@ export class AppComponent {
     this.testResponseText = (await this.generalService.messagePost(this.testInputText).toPromise()).message;
   }
 
+  async updateValueE(event) {
+    if (!this.serverPublicKey) {
+      alert('Please, click the "Get Public Key" button');
+      return ;
+    }
+
+    this.publicEText =  bigintToHex(this.serverE);
+    if(event == 'Dec')
+      this.publicEText = parseInt(this.publicEText.toString(),16).toString();
+  }
+
   async getPublicKeyButton() {
     const response =  await this.generalService.getPublicKey().toPromise();
     this.serverPublicKey = JSON.stringify(response);
@@ -67,11 +82,11 @@ export class AppComponent {
   }
 
   async getBlindSignature() {
-    const message = textToBigint(this.blindSignatureRequest);
-    if (!message) {
+    if (!this.blindSignatureRequest) {
       alert('No message');
       return ;
     }
+    const message = textToBigint(this.blindSignatureRequest);
 
     if (!(this.serverE && this.serverN)) {
       alert('Get public key first');
