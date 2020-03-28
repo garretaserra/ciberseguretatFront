@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 import {GeneralService} from './services/general.service';
 // @ts-ignore
 import my_rsa from 'my_rsa';
@@ -27,9 +27,15 @@ export class AppComponent {
 
   //No Repudiation
   username = '';
-  userList = [];
+  userList: User[];
   selectedUser: any = '';
   noRepudiationMessage = '';
+  k: bigint;
+  c: bigint;
+  Po: bigint;   //Proof of origin
+  Pr: bigint;   //Proof of reception
+  Pkp: bigint;  //Proof of k publication
+
 
   constructor(
     private generalService: GeneralService,
@@ -111,7 +117,7 @@ export class AppComponent {
     this.ChatService.getConnected().subscribe((message: string)=>{
       this.userList = JSON.parse(message);
       this.userList = this.userList.filter((user)=>{
-        user.publicKey = JSON.parse(user.publicKey);
+        // user.publicKey = JSON.parse(user.publicKey);
         if(user.username !== this.username)
           return user;
       });
@@ -124,26 +130,33 @@ export class AppComponent {
       return;
     }
 
-    const m = this.noRepudiationMessage;
-    if(!m){
+    if(!this.noRepudiationMessage){
       alert('Need message to send');
       return;
     }
-    //TODO: Symmetrically encrypt message c=m+k
 
+    //TODO: Symmetrically encrypt message c=m+k
     //Temporary until above is completed
-    let c = m;
+    this.c = textToBigint(this.noRepudiationMessage);
+
+    //TODO: Get timestamp
+    let timestamp = 'timestamp here';
 
     //Build message
-    let message = {
+    let body: NoRepudiationBody = {
+      origin: this.username,
+      destination: this.selectedUser.username,
+      c: bigintToHex(this.c),
+      timestamp: timestamp
+    };
+
+    //TODO: Get Proof of Origin: Sign hash of body
+    let Po = 'Po';
+
+    let message: NoRepudiationMessage = {
       messageType: 'noRepudiation1',
-      body:{
-        origin: this.username,
-        destination: this.selectedUser.username,
-        c: c,
-        timestamp: 'put timestamp here'
-      },
-      signature: 'alice signature of the body'
+      body: body,
+      signature: Po
     };
 
     this.ChatService.sendMessageToUser(message, this.selectedUser.id);
@@ -162,19 +175,19 @@ export class AppComponent {
     //Receives fist message of No repudiation from Alice and sends answers with second message to Alice
     //TODO: Check signature of message sender
 
-    //TODO: Sign the message
-
-    //refactoring message
     message.body.destination = message.body.origin;
     message.body.origin = this.username;
+
+    //TODO: Get Proof of Reception: Sign the body of the message
+    message.signature = 'Pr';
+
     message.messageType = 'noRepudiation2';
-    message.signature = 'bob signature of the body';
+    this.c = message.body.c;
+    message.body.c = undefined;
 
     //Find destination user
-    let dstUser;
     this.userList.some((user)=>{
       if(user.username === message.body.destination){
-        //Send message
         this.ChatService.sendMessageToUser(message, user.id);
         return true;
       }
@@ -201,6 +214,7 @@ export class AppComponent {
 
   handlePublishedMessages(){
     this.ChatService.receiveBroadcastsNoRepudiation().subscribe((message: any)=>{
+      console.log(message);
       //TODO: Analyse published message to see if you are Alice or Bob and display info
     })
   }
