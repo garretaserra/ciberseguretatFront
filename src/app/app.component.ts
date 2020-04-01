@@ -122,6 +122,10 @@ export class AppComponent {
   }
 
   login() {
+    if (!this.username){
+      alert('No username specified');
+      return;
+    }
     this.ChatService.login(this.username, JSON.stringify({e: bigintToHex(this.rsa.publicKey.e), n: bigintToHex(this.rsa.publicKey.n)}));
   }
 
@@ -156,8 +160,8 @@ export class AppComponent {
     // Temporary until above is completed
     this.c = textToBigint(this.noRepudiationMessage);
 
-    // TODO: Get timestamp
-    const timestamp = 'timestamp here';
+    // Get timestamp
+    const timestamp = Date.now().toString();
 
     // Build message
     const body: NoRepudiationBody = {
@@ -195,6 +199,8 @@ export class AppComponent {
 
     message.body.destination = message.body.origin;
     message.body.origin = this.username;
+    // Get timestamp
+    message.body.timestamp = Date.now().toString();
 
     // TODO: Get Proof of Reception: Sign the body of the message
     message.signature = 'Pr';
@@ -223,6 +229,7 @@ export class AppComponent {
     message.body.destination2 = message.body.origin;
     message.body.origin = this.username;
     message.body.k = 'symmetric key';
+    message.body.timestamp = Date.now().toString();
 
     // TODO: Sign message body
     message.signature = 'Pko';
