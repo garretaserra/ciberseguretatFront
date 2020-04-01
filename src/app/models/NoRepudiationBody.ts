@@ -3,6 +3,6 @@ class NoRepudiationBody{
   destination: string;
   timestamp: string;
   c?: string;
-  k?: string;
+  k?: SymmetricKey;
   destination2?: string;
 }

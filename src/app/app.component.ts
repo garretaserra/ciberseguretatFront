@@ -2,10 +2,9 @@ import {Component} from '@angular/core';
 import {GeneralService} from './services/general.service';
 // @ts-ignore
 import my_rsa from 'my_rsa';
-import {bigintToHex, bigintToText, hexToBigint, textToBigint} from 'bigint-conversion';
-import {ChatService} from './services/chat.service';
-
-
+import {bigintToHex, bigintToText, bufToText, hexToBigint, textToBigint} from 'bigint-conversion';
+import {ChatService} from "./services/chat.service";
+import {AESCBCModule} from "./aes-cbc/aes-cbc.module";
 
 @Component({
   selector: 'app-root',
@@ -34,12 +33,11 @@ export class AppComponent {
   userList: User[];
   selectedUser: any = '';
   noRepudiationMessage = '';
-  k: bigint;
-  c: bigint;
-  Po: bigint;   // Proof of origin
-  Pr: bigint;   // Proof of reception
-  Pkp: bigint;  // Proof of k publication
-
+  symKey: SymmetricKey;
+  c: string;
+  Po: bigint;   //Proof of origin
+  Pr: bigint;   //Proof of reception
+  Pkp: bigint;  //Proof of k publication
 
   constructor(
     private generalService: GeneralService,
@@ -145,7 +143,7 @@ export class AppComponent {
     });
   }
 
-  startNonRepudiableMessage() {
+  async startNonRepudiableMessage() {
     if (!this.selectedUser) {
       alert('Need to select user');
       return;
@@ -156,9 +154,15 @@ export class AppComponent {
       return;
     }
 
-    // TODO: Symmetrically encrypt message c=m+k
-    // Temporary until above is completed
-    this.c = textToBigint(this.noRepudiationMessage);
+    const iv = await window.crypto.getRandomValues(new Uint8Array(16));
+    const jwk = await AESCBCModule.generateKey();
+    let key = await crypto.subtle.exportKey('jwk', jwk);
+    this.c = await AESCBCModule.encryptMessage(this.noRepudiationMessage, jwk, iv);
+
+    const symKey: SymmetricKey = {
+      k: key.k,
+      iv: String.fromCharCode.apply(null, iv) // Convert IV to String
+    };
 
     // Get timestamp
     const timestamp = Date.now().toString();
@@ -167,8 +171,9 @@ export class AppComponent {
     const body: NoRepudiationBody = {
       origin: this.username,
       destination: this.selectedUser.username,
-      c: bigintToHex(this.c),
-      timestamp
+      c: this.c,
+      k: symKey,
+      timestamp: timestamp
     };
 
     // TODO: Get Proof of Origin: Sign hash of body
@@ -193,10 +198,36 @@ export class AppComponent {
     });
   }
 
-  answerNonRepudiableMessage(message) {
-    // Receives fist message of No repudiation from Alice and sends answers with second message to Alice
-    // TODO: Check signature of message sender
+  async answerNonRepudiableMessage(message) {
+    //Receives fist message of No repudiation from Alice and sends answers with second message to Alice
+    //TODO: Check signature of message sender
 
+    let str = message.body.k.iv;
+    var buf = new ArrayBuffer(str.length); // 2 bytes for each char
+    var bufView = new Uint8Array(buf);
+    for (var i = 0, strLen = str.length; i < strLen; i++) {
+      bufView[i] = str.charCodeAt(i);
+    }
+    let iv = bufView;
+    let key = message.body.k.k;
+    let c = message.body.c;
+
+    console.log('test', bufView);
+
+    let jwk = await crypto.subtle.importKey(
+      "jwk", {
+        alg: "A256CBC",
+        ext: true,
+        k: key,
+        key_ops: ["encrypt", "decrypt"],
+        kty: "oct",
+      },
+      "AES-CBC",
+      true, //whether the key is extractable (i.e. can be used in exportKey)
+      ["encrypt", "decrypt"]);
+       const m = await AESCBCModule.decryptMessage(c, jwk, iv);
+       let msg = bufToText(m);
+    console.log("mensaje original", msg);
     message.body.destination = message.body.origin;
     message.body.origin = this.username;
     // Get timestamp
@@ -240,7 +271,8 @@ export class AppComponent {
   handlePublishedMessages() {
     this.ChatService.receiveBroadcastsNoRepudiation().subscribe((message: any) => {
       console.log(message);
-      // TODO: Analyse published message to see if you are Alice or Bob and display info
-    });
+      //TODO: Analyse published message to see if you are Alice or Bob and display info
+      //Decypher
+    })
   }
 }
