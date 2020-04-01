@@ -159,7 +159,7 @@ export class AppComponent {
     let key = await crypto.subtle.exportKey('jwk', jwk);
     this.c = await AESCBCModule.encryptMessage(this.noRepudiationMessage, jwk, iv);
 
-    const symKey: SymmetricKey = {
+    this.symKey = {
       k: key.k,
       iv: String.fromCharCode.apply(null, iv) // Convert IV to String
     };
@@ -172,7 +172,6 @@ export class AppComponent {
       origin: this.username,
       destination: this.selectedUser.username,
       c: this.c,
-      k: symKey,
       timestamp: timestamp
     };
 
@@ -202,32 +201,7 @@ export class AppComponent {
     //Receives fist message of No repudiation from Alice and sends answers with second message to Alice
     //TODO: Check signature of message sender
 
-    let str = message.body.k.iv;
-    var buf = new ArrayBuffer(str.length); // 2 bytes for each char
-    var bufView = new Uint8Array(buf);
-    for (var i = 0, strLen = str.length; i < strLen; i++) {
-      bufView[i] = str.charCodeAt(i);
-    }
-    let iv = bufView;
-    let key = message.body.k.k;
-    let c = message.body.c;
 
-    console.log('test', bufView);
-
-    let jwk = await crypto.subtle.importKey(
-      "jwk", {
-        alg: "A256CBC",
-        ext: true,
-        k: key,
-        key_ops: ["encrypt", "decrypt"],
-        kty: "oct",
-      },
-      "AES-CBC",
-      true, //whether the key is extractable (i.e. can be used in exportKey)
-      ["encrypt", "decrypt"]);
-       const m = await AESCBCModule.decryptMessage(c, jwk, iv);
-       let msg = bufToText(m);
-    console.log("mensaje original", msg);
     message.body.destination = message.body.origin;
     message.body.origin = this.username;
     // Get timestamp
@@ -259,20 +233,33 @@ export class AppComponent {
     message.body.destination = 'TTP';
     message.body.destination2 = message.body.origin;
     message.body.origin = this.username;
-    message.body.k = 'symmetric key';
+    message.body.k = this.symKey;
     message.body.timestamp = Date.now().toString();
 
     // TODO: Sign message body
     message.signature = 'Pko';
-
     this.ChatService.publishMessage(message);
   }
 
   handlePublishedMessages() {
-    this.ChatService.receiveBroadcastsNoRepudiation().subscribe((message: any) => {
+    this.ChatService.receiveBroadcastsNoRepudiation().subscribe(async (message: any) => {
       console.log(message);
       //TODO: Analyse published message to see if you are Alice or Bob and display info
-      //Decypher
+
+      let str = message.body.k.iv;
+      var buf = new ArrayBuffer(str.length); // 2 bytes for each char
+      var bufView = new Uint8Array(buf);
+      for (var i = 0, strLen = str.length; i < strLen; i++) {
+        bufView[i] =str.charCodeAt(i);
+      }
+
+      let iv = bufView;
+      let key = message.body.k.k;
+      let jwk = await AESCBCModule.importKey(key);
+
+      const m = await AESCBCModule.decryptMessage(this.c, jwk, iv);
+      let msg = bufToText(m);
+      console.log("Original message:", msg);
     })
   }
 }
