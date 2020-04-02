@@ -332,7 +332,7 @@ export class AppComponent {
 
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
           width: '500px',
-          data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(this.Pkp), username: message.body.sender, message: msg}
+          data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(this.Pkp), username: message.body.destination, message: msg}
         })
       }
       else if(message.body.destination === this.username){
