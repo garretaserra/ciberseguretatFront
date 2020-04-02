@@ -18,10 +18,13 @@ import {MatListModule} from "@angular/material/list";
 import {MatCardModule} from "@angular/material/card";
 import {MatIconModule} from "@angular/material/icon";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
+import { NoRepudiationPopUpComponent } from './no-repudiation-pop-up/no-repudiation-pop-up.component';
+import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 
 @NgModule({
   declarations: [
-    AppComponent
+    AppComponent,
+    NoRepudiationPopUpComponent
   ],
   imports: [
     BrowserModule,
@@ -39,9 +42,11 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
     MatListModule,
     MatCardModule,
     MatIconModule,
-    MatButtonToggleModule
+    MatButtonToggleModule,
+    MatDialogModule
   ],
   providers: [ChatService],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  entryComponents:[NoRepudiationPopUpComponent]
 })
 export class AppModule { }

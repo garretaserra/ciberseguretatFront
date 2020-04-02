@@ -6,6 +6,8 @@ import {bigintToHex, bigintToText, bufToText, hexToBigint, textToBigint} from 'b
 import {ChatService} from "./services/chat.service";
 import {AESCBCModule} from "./aes-cbc/aes-cbc.module";
 import {digest} from "object-sha";
+import {NoRepudiationPopUpComponent} from "./no-repudiation-pop-up/no-repudiation-pop-up.component";
+import {MatDialog} from "@angular/material/dialog";
 
 @Component({
   selector: 'app-root',
@@ -42,7 +44,8 @@ export class AppComponent {
 
   constructor(
     private generalService: GeneralService,
-    private ChatService: ChatService
+    private ChatService: ChatService,
+    public dialog: MatDialog
   ) {
     this.rsa = new my_rsa();
   }
@@ -220,8 +223,10 @@ export class AppComponent {
       alert('Verification of Po failed');
       return ;
     }
-    else
+    else {
       console.log('Verification of Po passed', hash);
+      this.Po = hexToBigint(message.signature);
+    }
 
     message.body.destination = message.body.origin;
     message.body.origin = this.username;
@@ -300,27 +305,35 @@ export class AppComponent {
       if (hash !== bigintToHex(sig)) {
         alert('Verification of Pkp failed');
         return;
-      } else
+      } else{
         console.log('Verification of Pkp passed', hash);
-
-      //TODO: Analyse published message to see if you are Alice or Bob and display info
-
-
-      //  Convert iv: string to iv: Uint8Array
-      let str = message.body.k.iv;
-      var buf = new ArrayBuffer(str.length); // 2 bytes for each char
-      var bufView = new Uint8Array(buf);
-      for (var i = 0, strLen = str.length; i < strLen; i++) {
-        bufView[i] =str.charCodeAt(i);
+        this.Pkp = hexToBigint(message.signature);
       }
 
-      let iv = bufView;
-      let key = message.body.k.k;
-      let jwk = await AESCBCModule.importKey(key);
 
-      const m = await AESCBCModule.decryptMessage(this.c, jwk, iv);
-      let msg = bufToText(m);
-      console.log("Original message:", msg);
+      //TODO: Analyse published message to see if you are Alice or Bob and display info
+      if(message.body.destination2 == this.username) {
+        //  Convert iv: string to iv: Uint8Array
+        let str = message.body.k.iv;
+        var buf = new ArrayBuffer(str.length); // 2 bytes for each char
+        var bufView = new Uint8Array(buf);
+        for (var i = 0, strLen = str.length; i < strLen; i++) {
+          bufView[i] = str.charCodeAt(i);
+        }
+
+        let iv = bufView;
+        let key = message.body.k.k;
+        let jwk = await AESCBCModule.importKey(key);
+
+        const m = await AESCBCModule.decryptMessage(this.c, jwk, iv);
+        let msg = bufToText(m);
+        console.log("Original message:", msg);
+
+        const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
+          width: '500px',
+          data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(this.Pkp)}
+        })
+      }
     })
   }
 }
