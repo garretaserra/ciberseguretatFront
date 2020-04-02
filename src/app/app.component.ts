@@ -32,7 +32,7 @@ export class AppComponent {
   // No Repudiation
   username = '';
   userList: User[];
-  selectedUser: any = '';
+  selectedUser: User = {username: undefined, publicKey: undefined, id:undefined};
   noRepudiationMessage = '';
   symKey: SymmetricKey;
   c: string;
@@ -131,6 +131,7 @@ export class AppComponent {
 
   selectUser(user) {
     this.selectedUser = user;
+    console.log(this.selectedUser);
   }
 
   handleNewUsers() {
