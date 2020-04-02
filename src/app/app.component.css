@@ -3,11 +3,15 @@
 }
 
 .mat-figure{
-  display: inherit;
+  align-items: flex-start;
 }
 
-.mat-grid-tile{
-  display: inherit;
+.mat-grid-tile .mat-figure{
+  position: absolute;
+  display: flex;
+  align-items: flex-start;
+  justify-content: start;
+
 }
 
 .toolbar{

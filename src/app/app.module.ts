@@ -43,6 +43,8 @@ import {MatDialog, MatDialogModule} from "@angular/material/dialog";
     MatCardModule,
     MatIconModule,
     MatButtonToggleModule,
+
+    MatButtonToggleModule,
     MatDialogModule
   ],
   providers: [ChatService],
