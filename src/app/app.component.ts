@@ -5,6 +5,7 @@ import my_rsa from 'my_rsa';
 import {bigintToHex, bigintToText, bufToText, hexToBigint, textToBigint} from 'bigint-conversion';
 import {ChatService} from "./services/chat.service";
 import {AESCBCModule} from "./aes-cbc/aes-cbc.module";
+import {digest} from "object-sha";
 
 @Component({
   selector: 'app-root',
@@ -95,6 +96,7 @@ export class AppComponent {
     // Blind message
     const res = my_rsa.blind(message, this.serverE, this.serverN);
     const blindedMessage = bigintToHex(res.blindedMessage);
+
     // Get r for unblinding
     const r = res.r;
 
@@ -154,14 +156,16 @@ export class AppComponent {
       return;
     }
 
+    // Encrypt the message
     const iv = await window.crypto.getRandomValues(new Uint8Array(16));
-    const jwk = await AESCBCModule.generateKey();
-    let key = await crypto.subtle.exportKey('jwk', jwk);
-    this.c = await AESCBCModule.encryptMessage(this.noRepudiationMessage, jwk, iv);
+    const jwk = await AESCBCModule.generateKey(); // Generated key in jwk format
+    let key = await crypto.subtle.exportKey('jwk', jwk); // Export generated key
+    this.c = await AESCBCModule.encryptMessage(this.noRepudiationMessage, jwk, iv); // Message encrypted
 
+    // Save Key. Key is formed by k and iv.
     this.symKey = {
       k: key.k,
-      iv: String.fromCharCode.apply(null, iv) // Convert IV to String
+      iv: String.fromCharCode.apply(null, iv) // Convert iv to String
     };
 
     // Get timestamp
@@ -176,7 +180,9 @@ export class AppComponent {
     };
 
     // TODO: Get Proof of Origin: Sign hash of body
-    const Po = 'Po';
+    const hash = await digest(body);
+    const Po = bigintToHex(this.rsa.sign(hexToBigint(hash)));
+    console.log('Po', Po);
 
     const message: NoRepudiationMessage = {
       messageType: 'noRepudiation1',
@@ -200,7 +206,18 @@ export class AppComponent {
   async answerNonRepudiableMessage(message) {
     //Receives fist message of No repudiation from Alice and sends answers with second message to Alice
     //TODO: Check signature of message sender
-
+    let hash = await digest(message.body);
+    let key;
+    this.userList.forEach((user)=>{
+      if(user.username === message.body.origin)
+        key = user.publicKey;
+    });
+    console.log(message, key);
+    let sig = my_rsa.verify(hexToBigint(message.signature), hexToBigint(key.e), hexToBigint(key.n));
+    if(hash !== bigintToHex(sig)){
+      alert('Verification failed');
+      return ;
+    }
 
     message.body.destination = message.body.origin;
     message.body.origin = this.username;
@@ -246,6 +263,7 @@ export class AppComponent {
       console.log(message);
       //TODO: Analyse published message to see if you are Alice or Bob and display info
 
+      //  Convert iv: string to iv: Uint8Array
       let str = message.body.k.iv;
       var buf = new ArrayBuffer(str.length); // 2 bytes for each char
       var bufView = new Uint8Array(buf);
