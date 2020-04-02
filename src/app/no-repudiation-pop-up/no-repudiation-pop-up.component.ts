@@ -3,7 +3,9 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 export interface DialogData {
   Pkp: string,
-  Po: string
+  Po: string,
+  username: string,
+  message: string,
 }
 
 @Component({
@@ -14,15 +16,10 @@ export interface DialogData {
 
 export class NoRepudiationPopUpComponent implements OnInit {
 
-  // Pko: string;
-  // Po: string;
-
   constructor(
     public dialogRef: MatDialogRef<NoRepudiationPopUpComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
-  ) {
-
-  }
+  ) {  }
 
   ngOnInit() {
   }

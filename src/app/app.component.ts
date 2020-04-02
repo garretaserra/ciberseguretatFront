@@ -307,12 +307,14 @@ export class AppComponent {
         return;
       } else{
         console.log('Verification of Pkp passed', hash);
-        this.Pkp = hexToBigint(message.signature);
       }
 
 
-      //TODO: Analyse published message to see if you are Alice or Bob and display info
+      // Analyse published message to see if you are Alice or Bob and display info
       if(message.body.destination2 == this.username) {
+        // Bob
+        this.Pkp = hexToBigint(message.signature);
+
         //  Convert iv: string to iv: Uint8Array
         let str = message.body.k.iv;
         var buf = new ArrayBuffer(str.length); // 2 bytes for each char
@@ -327,12 +329,15 @@ export class AppComponent {
 
         const m = await AESCBCModule.decryptMessage(this.c, jwk, iv);
         let msg = bufToText(m);
-        console.log("Original message:", msg);
 
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
           width: '500px',
-          data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(this.Pkp)}
+          data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(this.Pkp), username: message.body.destination, message: msg}
         })
+      }
+      else if(message.body.destination === this.username){
+        // Alice
+        this.Pkp = hexToBigint(message.signature);
       }
     })
   }

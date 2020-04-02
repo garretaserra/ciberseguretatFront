@@ -1,3 +1,36 @@
-<p>no-repudiation-pop-up works!</p>
-{{data.Pkp}}
-{{data.Po}}
+<div style="margin: auto; font-size: 20pt">
+  {{data.username}}
+</div>
+<div>
+  Message:
+  <mat-form-field style="width: 50%">
+    <textarea #autosize="cdkTextareaAutosize"
+              [(ngModel)]="data.message"
+              cdkAutosizeMaxRows="5"
+              cdkAutosizeMinRows="3"
+              cdkTextareaAutosize
+              matInput></textarea>
+  </mat-form-field>
+</div>
+<div>
+  Proof of Origin:
+  <mat-form-field style="width: 50%">
+    <textarea #autosize="cdkTextareaAutosize"
+              [(ngModel)]="data.Po"
+              cdkAutosizeMaxRows="5"
+              cdkAutosizeMinRows="3"
+              cdkTextareaAutosize
+              matInput></textarea>
+  </mat-form-field>
+</div>
+<div>
+  Proof of Publication of K
+  <mat-form-field style="width: 50%">
+    <textarea #autosize="cdkTextareaAutosize"
+              [(ngModel)]="data.Pkp"
+              cdkAutosizeMaxRows="5"
+              cdkAutosizeMinRows="3"
+              cdkTextareaAutosize
+              matInput></textarea>
+  </mat-form-field>
+</div>
