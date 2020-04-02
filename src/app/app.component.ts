@@ -131,7 +131,6 @@ export class AppComponent {
 
   selectUser(user) {
     this.selectedUser = user;
-    console.log(this.selectedUser);
   }
 
   handleNewUsers() {
@@ -180,7 +179,6 @@ export class AppComponent {
       timestamp: timestamp
     };
 
-    // TODO: Get Proof of Origin: Sign hash of body
     const hash = await digest(body);
     const Po = bigintToHex(this.rsa.sign(hexToBigint(hash)));
     console.log('Po', Po);
@@ -191,6 +189,7 @@ export class AppComponent {
       signature: Po
     };
 
+    console.log('Message sent', message);
     this.ChatService.sendMessageToUser(message, this.selectedUser.id);
   }
 
@@ -206,45 +205,69 @@ export class AppComponent {
 
   async answerNonRepudiableMessage(message) {
     //Receives fist message of No repudiation from Alice and sends answers with second message to Alice
-    //TODO: Check signature of message sender
+    console.log('Received message', message);
+
+    // Check signature
     let hash = await digest(message.body);
+    // Get public key of sender
     let key;
     this.userList.forEach((user)=>{
       if(user.username === message.body.origin)
         key = user.publicKey;
     });
-    console.log(message, key);
     let sig = my_rsa.verify(hexToBigint(message.signature), hexToBigint(key.e), hexToBigint(key.n));
     if(hash !== bigintToHex(sig)){
-      alert('Verification failed');
+      alert('Verification of Po failed');
       return ;
     }
+    else
+      console.log('Verification of Po passed', hash);
 
     message.body.destination = message.body.origin;
     message.body.origin = this.username;
     // Get timestamp
     message.body.timestamp = Date.now().toString();
 
-    // TODO: Get Proof of Reception: Sign the body of the message
-    message.signature = 'Pr';
+    // Save Cipher locally and remove it from message
+    this.c = message.body.c;
+    delete message.body.c;
+
+    // Get Proof of Reception: Pr
+    hash = await digest(message.body);
+    message.signature = bigintToHex(this.rsa.sign(hexToBigint(hash)));
 
     message.messageType = 'noRepudiation2';
-    this.c = message.body.c;
-    message.body.c = undefined;
 
     // Find destination user
     this.userList.some((user) => {
       if (user.username === message.body.destination) {
         this.ChatService.sendMessageToUser(message, user.id);
+        console.log('Message sent', message);
         return true;
       }
     });
   }
 
-  publishNoRepudiationMessage(message) {
+  async publishNoRepudiationMessage(message) {
     // Receives answer from Bob (2nd message of no repudiation) and sends message to publish to TTP (3rd message of no repudiation)
+    console.log('Received message', message);
 
     // TODO: Check signature
+    // Check signature
+    let hash = await digest(message.body);
+    // Get public key of sender
+    let key;
+    this.userList.forEach((user) => {
+      if (user.username === message.body.origin)
+        key = user.publicKey;
+    });
+    let sig = my_rsa.verify(hexToBigint(message.signature), hexToBigint(key.e), hexToBigint(key.n));
+    console.log(hash, bigintToHex(sig), key);
+    if (hash !== bigintToHex(sig)) {
+      alert('Verification of Pr failed');
+      return;
+    } else
+      console.log('Verification of Pr passed', hash);
 
     // Refactor message
     message.messageType = 'noRepudiation3';
@@ -255,14 +278,33 @@ export class AppComponent {
     message.body.timestamp = Date.now().toString();
 
     // TODO: Sign message body
-    message.signature = 'Pko';
+    // Get Proof of Reception of K: Pko
+    hash = await digest(message.body);
+    message.signature = bigintToHex(this.rsa.sign(hexToBigint(hash)));
+
+    console.log('Message sent', message);
     this.ChatService.publishMessage(message);
   }
 
   handlePublishedMessages() {
     this.ChatService.receiveBroadcastsNoRepudiation().subscribe(async (message: any) => {
-      console.log(message);
+      console.log('Received message', message);
+
+      // Get servers public key
+      await this.getPublicKeyButton();
+
+      // Check signature
+      let hash = await digest(message.body);
+
+      let sig = my_rsa.verify(hexToBigint(message.signature), this.serverE, this.serverN);
+      if (hash !== bigintToHex(sig)) {
+        alert('Verification of Pkp failed');
+        return;
+      } else
+        console.log('Verification of Pkp passed', hash);
+
       //TODO: Analyse published message to see if you are Alice or Bob and display info
+
 
       //  Convert iv: string to iv: Uint8Array
       let str = message.body.k.iv;
