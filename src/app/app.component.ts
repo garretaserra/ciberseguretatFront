@@ -43,7 +43,8 @@ export class AppComponent {
   Pr: bigint;   //Proof of reception
   PrText: string;
   Pkp: bigint;  //Proof of k publication
-  PkpText: string
+  PkpText: string;
+  lockLoginButton :boolean = false;
 
   constructor(
     private generalService: GeneralService,
@@ -135,6 +136,7 @@ export class AppComponent {
     }
     this.ChatService.login(this.username, JSON.stringify({e: bigintToHex(this.rsa.publicKey.e), n: bigintToHex(this.rsa.publicKey.n)}));
     this.snackBar.open('Logged in','ok', {duration: 1000});
+    this.lockLoginButton = true;
   }
 
   selectUser(user) {
