@@ -242,11 +242,12 @@ export class AppComponent {
 
     // Save Cipher locally and remove it from message
     this.c = message.body.c;
-    delete message.body.c;
 
     // Get Proof of Reception: Pr
     hash = await digest(message.body);
     message.signature = bigintToHex(this.rsa.sign(hexToBigint(hash)));
+
+    delete message.body.c;
 
     message.messageType = 'noRepudiation2';
 
@@ -263,6 +264,8 @@ export class AppComponent {
   async publishNoRepudiationMessage(message) {
     // Receives answer from Bob (2nd message of no repudiation) and sends message to publish to TTP (3rd message of no repudiation)
     console.log('Received message', message);
+
+    message.body.c = this.c;
 
     // TODO: Check signature
     // Check signature
