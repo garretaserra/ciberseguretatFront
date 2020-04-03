@@ -1,5 +1,5 @@
 <mat-toolbar class="toolbar">Cybersecurity</mat-toolbar>
-<mat-tab-group>
+<mat-tab-group style="height: 100%">
   <mat-tab label="Test Server">
     <mat-grid-list cols="2">
       <mat-grid-tile>
@@ -124,8 +124,8 @@
     </mat-grid-list>
   </mat-tab>
   <!--------------------------------------------------------------------------------->
-  <mat-tab label="No Repudiation">
-    <div class="layout-row" >
+  <mat-tab label="No Repudiation" style="overflow: hidden">
+    <div class="layout-row" style="overflow: hidden">
       <div style="align-items: center; height: 15vh; ">
         <mat-card flex="" style="margin-left: 0.8%;margin-top: 1%; margin-bottom: 3%;align-items: center; background-color: #673ab747; width: 98%">
           <mat-form-field style="margin-left: 1%">
@@ -136,7 +136,7 @@
           <button style="margin-left: 5%" (click)=login() mat-raised-button>Login</button>
         </mat-card>
       </div>
-      <mat-grid-list cols="2" style="width: 100%; margin-top: 2%" >
+      <mat-grid-list cols="3"  rowHeight="500px" style="margin-top: 5%;" >
         <mat-grid-tile style="width: 100%">
           <div class="mat-figure" style="align-content:flex-start ">
             <mat-card style="background-color: #673ab747; width: 100%; background-color: #673ab747; height: 100%;margin-left: 1%">
@@ -158,11 +158,11 @@
             </mat-card>
           </div>
         </mat-grid-tile>
-        <mat-grid-tile style="align-content: flex-start;  align-items: flex-start; width: 100%">
+        <mat-grid-tile colspan="2" style="align-content: flex-start;  align-items: flex-start; width: 100%">
           <div class="mat-figure" style="align-items: flex-start">
-            <mat-card style="margin-top: 0%; align-items: center;  height: 100%; margin-left: 1% ; background-color: #673ab747">
+            <mat-card style="margin-top: 0%; align-items: center; width: 90%; height: 100%; margin-left: 1% ; background-color: #673ab747">
               <mat-card style="margin-top: 1%; margin-bottom: 2%; background-color: #673ab747">
-                <mat-form-field style="width: 50%">
+                <mat-form-field style="width: 100%">
                  <textarea #autosize="cdkTextareaAutosize"
                            [(ngModel)]="noRepudiationMessage"
                            cdkAutosizeMaxRows="5"
@@ -173,7 +173,7 @@
                 <button (click)="startNonRepudiableMessage()" mat-raised-button> Send Non Repudiable Message</button>
               </mat-card>
               <mat-card style="margin-top: 2%; margin-bottom: 2%; background-color: #673ab747">
-                <mat-form-field>
+                <mat-form-field style="width: 100%">
                     <textarea #autosize="cdkTextareaAutosize"
                               [(ngModel)]="Pr"
                               cdkAutosizeMaxRows="5"
@@ -183,7 +183,7 @@
                 </mat-form-field>
               </mat-card>
               <mat-card style="margin-top: 2%; margin-bottom: 2%; background-color: #673ab747">
-                <mat-form-field>
+                <mat-form-field style="width: 100%">
                        <textarea #autosize="cdkTextareaAutosize"
                                  [(ngModel)]="Pkp"
                                  cdkAutosizeMaxRows="5"

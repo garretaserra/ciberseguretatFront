@@ -20,6 +20,7 @@ import {MatIconModule} from "@angular/material/icon";
 import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import { NoRepudiationPopUpComponent } from './no-repudiation-pop-up/no-repudiation-pop-up.component';
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
+import {MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
 
 @NgModule({
   declarations: [
@@ -43,12 +44,16 @@ import {MatDialog, MatDialogModule} from "@angular/material/dialog";
     MatCardModule,
     MatIconModule,
     MatButtonToggleModule,
-
-    MatButtonToggleModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule
   ],
-  providers: [ChatService],
+  providers: [
+    ChatService,
+    MatSnackBar
+  ],
   bootstrap: [AppComponent],
-  entryComponents:[NoRepudiationPopUpComponent]
+  entryComponents:[
+    NoRepudiationPopUpComponent,
+  ]
 })
 export class AppModule { }

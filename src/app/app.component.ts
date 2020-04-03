@@ -8,6 +8,7 @@ import {AESCBCModule} from "./aes-cbc/aes-cbc.module";
 import {digest} from "object-sha";
 import {NoRepudiationPopUpComponent} from "./no-repudiation-pop-up/no-repudiation-pop-up.component";
 import {MatDialog} from "@angular/material/dialog";
+import {MatSnackBar} from "@angular/material/snack-bar";
 
 @Component({
   selector: 'app-root',
@@ -45,7 +46,8 @@ export class AppComponent {
   constructor(
     private generalService: GeneralService,
     private ChatService: ChatService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     this.rsa = new my_rsa();
   }
@@ -130,6 +132,7 @@ export class AppComponent {
       return;
     }
     this.ChatService.login(this.username, JSON.stringify({e: bigintToHex(this.rsa.publicKey.e), n: bigintToHex(this.rsa.publicKey.n)}));
+    this.snackBar.open('Logged in','ok', {duration: 1000});
   }
 
   selectUser(user) {
@@ -293,7 +296,7 @@ export class AppComponent {
 
   handlePublishedMessages() {
     this.ChatService.receiveBroadcastsNoRepudiation().subscribe(async (message: any) => {
-      console.log('Received message', message);
+      console.log('Received message ', message);
 
       // Get servers public key
       await this.getPublicKeyButton();
@@ -333,7 +336,8 @@ export class AppComponent {
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
           width: '500px',
           data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(this.Pkp), username: message.body.destination, message: msg}
-        })
+        });
+        dialogRef.afterClosed().subscribe(result=>{});
       }
       else if(message.body.destination === this.username){
         // Alice

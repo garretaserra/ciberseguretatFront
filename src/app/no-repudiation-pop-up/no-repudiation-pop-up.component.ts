@@ -24,4 +24,7 @@ export class NoRepudiationPopUpComponent implements OnInit {
   ngOnInit() {
   }
 
+  close() {
+    this.dialogRef.close();
+  }
 }
