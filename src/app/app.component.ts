@@ -43,6 +43,7 @@ export class AppComponent {
   Pr: bigint;   //Proof of reception
   PrText: string;
   Pkp: bigint;  //Proof of k publication
+  PkpText: string
 
   constructor(
     private generalService: GeneralService,
@@ -277,7 +278,7 @@ export class AppComponent {
       return;
     } else{
       console.log('Verification of Pr passed', hash);
-      this.PrText = hash;
+      this.PrText = message.signature;
     }
 
     // Refactor message
@@ -317,7 +318,12 @@ export class AppComponent {
 
 
       // Analyse published message to see if you are Alice or Bob and display info
-      if(message.body.destination2 == this.username) {
+      if(message.body.destination === this.username){
+        // Alice
+        this.Pkp = hexToBigint(message.signature);
+        this.PkpText = message.signature;
+      }
+      else if(message.body.destination2 == this.username) {
         // Bob
         this.Pkp = hexToBigint(message.signature);
 
@@ -343,10 +349,6 @@ export class AppComponent {
         dialogRef.afterClosed().subscribe(result=>{
           console.log('Closed pop up')
         });
-      }
-      else if(message.body.destination === this.username){
-        // Alice
-        this.Pkp = hexToBigint(message.signature);
       }
     })
   }
