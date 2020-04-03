@@ -41,6 +41,7 @@ export class AppComponent {
   c: string;
   Po: bigint;   //Proof of origin
   Pr: bigint;   //Proof of reception
+  PrText: string;
   Pkp: bigint;  //Proof of k publication
 
   constructor(
@@ -274,8 +275,10 @@ export class AppComponent {
     if (hash !== bigintToHex(sig)) {
       alert('Verification of Pr failed');
       return;
-    } else
+    } else{
       console.log('Verification of Pr passed', hash);
+      this.PrText = hash;
+    }
 
     // Refactor message
     message.messageType = 'noRepudiation3';
@@ -337,7 +340,9 @@ export class AppComponent {
           width: '500px',
           data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(this.Pkp), username: message.body.destination, message: msg}
         });
-        dialogRef.afterClosed().subscribe(result=>{});
+        dialogRef.afterClosed().subscribe(result=>{
+          console.log('Closed pop up')
+        });
       }
       else if(message.body.destination === this.username){
         // Alice
