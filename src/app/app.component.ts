@@ -38,7 +38,7 @@ export class AppComponent {
   selectedUser: User = {username: undefined, publicKey: undefined, id:undefined};
   noRepudiationMessage = '';
   symKey: SymmetricKey;
-  c: string;
+  c: bigint;
   Po: bigint;   //Proof of origin
   Pr: bigint;   //Proof of reception
   PrText: string;
@@ -171,7 +171,10 @@ export class AppComponent {
     const iv = await window.crypto.getRandomValues(new Uint8Array(16));
     const jwk = await AESCBCModule.generateKey(); // Generated key in jwk format
     let key = await crypto.subtle.exportKey('jwk', jwk); // Export generated key
-    this.c = await AESCBCModule.encryptMessage(this.noRepudiationMessage, jwk, iv); // Message encrypted
+    this.c = await AESCBCModule.encryptMessage(this.noRepudiationMessage, jwk, iv); // Blind Message
+
+    // Encrypt blinded message with Bob's public key
+    this.c = my_rsa.encrypt(this.c, hexToBigint(this.selectedUser.publicKey.e), hexToBigint(this.selectedUser.publicKey.n));
 
     // Save Key. Key is formed by k and iv.
     this.symKey = {
@@ -186,7 +189,7 @@ export class AppComponent {
     const body: NoRepudiationBody = {
       origin: this.username,
       destination: this.selectedUser.username,
-      c: this.c,
+      c: bigintToHex(this.c),
       timestamp: timestamp
     };
 
@@ -241,14 +244,16 @@ export class AppComponent {
     // Get timestamp
     message.body.timestamp = Date.now().toString();
 
-    // Save Cipher locally and remove it from message
-    this.c = message.body.c;
-
     // Get Proof of Reception: Pr
     hash = await digest(message.body);
     message.signature = bigintToHex(this.rsa.sign(hexToBigint(hash)));
 
+    // Save Cipher locally and remove it from message
+    this.c = hexToBigint(message.body.c);
     delete message.body.c;
+
+    // Decrypt blinded message
+    this.c = this.rsa.decrypt(this.c);
 
     message.messageType = 'noRepudiation2';
 
@@ -266,7 +271,7 @@ export class AppComponent {
     // Receives answer from Bob (2nd message of no repudiation) and sends message to publish to TTP (3rd message of no repudiation)
     console.log('Received message', message);
 
-    message.body.c = this.c;
+    message.body.c = bigintToHex(this.c);
 
     // Check signature
     let hash = await digest(message.body);

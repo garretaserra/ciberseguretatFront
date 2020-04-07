@@ -1,6 +1,6 @@
 import {NgModule} from '@angular/core';
 import {CommonModule} from '@angular/common';
-import {bufToHex, hexToBuf} from "bigint-conversion";
+import {bigintToBuf, bufToBigint, bufToHex, hexToBuf} from "bigint-conversion";
 
 
 @NgModule({
@@ -63,7 +63,7 @@ export class AESCBCModule {
       key, //from generateKey or importKey above
       encoded //ArrayBuffer of data you want to encrypt
     );
-    return bufToHex(encrypted);
+    return bufToBigint(encrypted);
   }
 
   /**
@@ -85,7 +85,7 @@ export class AESCBCModule {
    *
    */
   static async decryptMessage(ciphertext, key, iv) {
-    ciphertext = hexToBuf(ciphertext);
+    ciphertext = bigintToBuf(ciphertext);
     return  await window.crypto.subtle.decrypt(
       {
         name: "AES-CBC",
