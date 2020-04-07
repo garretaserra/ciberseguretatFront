@@ -87,6 +87,7 @@ export class AppComponent {
     const object = JSON.parse(this.serverPublicKey);
     this.serverN = hexToBigint(object.n);
     this.serverE = hexToBigint(object.e);
+    this.publicEText =  bigintToHex(this.serverE);
   }
 
   async getBlindSignature() {
