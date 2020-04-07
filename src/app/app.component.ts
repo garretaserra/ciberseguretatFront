@@ -268,7 +268,6 @@ export class AppComponent {
 
     message.body.c = this.c;
 
-    // TODO: Check signature
     // Check signature
     let hash = await digest(message.body);
     // Get public key of sender
@@ -295,7 +294,6 @@ export class AppComponent {
     message.body.k = this.symKey;
     message.body.timestamp = Date.now().toString();
 
-    // TODO: Sign message body
     // Get Proof of Reception of K: Pko
     hash = await digest(message.body);
     message.signature = bigintToHex(this.rsa.sign(hexToBigint(hash)));
