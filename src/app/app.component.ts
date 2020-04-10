@@ -281,6 +281,16 @@ export class AppComponent {
     // Receives answer from Bob (2nd message of no repudiation) and sends message to publish to TTP (3rd message of no repudiation)
     console.log('Received message', message);
 
+    // Check timestamp
+    const localTimestamp = Date.now();
+    const remoteTimestamp = parseInt(message.body.timestamp, 10);
+    const maxDiffTime = 2 * 60 * 1000; // 2 minutes
+    const calcDiffTime = (localTimestamp - remoteTimestamp);
+    if (calcDiffTime < 0 || calcDiffTime > maxDiffTime){
+      alert('Timestamp error ' + calcDiffTime + ' ms.');
+      return;
+    }
+
     message.body.c = bigintToHex(this.c);
 
     // Check signature
