@@ -221,6 +221,16 @@ export class AppComponent {
     //Receives fist message of No repudiation from Alice and sends answers with second message to Alice
     console.log('Received message', message);
 
+    // Check timestamp
+    const localTimestamp = Date.now();
+    const remoteTimestamp = parseInt(message.body.timestamp, 10);
+    const maxDiffTime = 2 * 60 * 1000; // 2 minutes
+    const calcDiffTime = (localTimestamp - remoteTimestamp);
+    if (calcDiffTime < 0 || calcDiffTime > maxDiffTime){
+      alert('Timestamp error ' + calcDiffTime + ' ms.');
+      return;
+    }
+
     // Check signature
     let hash = await digest(message.body);
     // Get public key of sender
