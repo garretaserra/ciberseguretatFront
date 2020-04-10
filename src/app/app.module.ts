@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -21,11 +20,13 @@ import {MatButtonToggleModule} from "@angular/material/button-toggle";
 import { NoRepudiationPopUpComponent } from './no-repudiation-pop-up/no-repudiation-pop-up.component';
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
+import { HomomorphismComponent } from './homomorphism/homomorphism.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    NoRepudiationPopUpComponent
+    NoRepudiationPopUpComponent,
+    HomomorphismComponent
   ],
   imports: [
     BrowserModule,
