@@ -8,9 +8,18 @@ import {AppComponent} from "../app.component";
 })
 export class HomomorphismComponent implements OnInit {
 
+  Number1 = "";
+  Number2 = "";
+  result = "";
+
+
   constructor() {}
 
   ngOnInit() {
   }
 
+
+  Sum() {
+
+  }
 }

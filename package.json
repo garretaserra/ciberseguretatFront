@@ -27,6 +27,7 @@
     "hammerjs": "^2.0.8",
     "my_rsa": "file:../RSA",
     "object-sha": "^1.0.5",
+    "paillier-bigint": "^3.0.4",
     "rxjs": "~6.4.0",
     "text-encoding": "^0.7.0",
     "tslib": "^1.10.0",
