@@ -13,13 +13,13 @@ export class PaillierService {
   ) { }
   url = environment.uri;
 
-  private aggregatorUrl = 'localhost:3001/';
+  private aggregatorUrl = 'http://localhost:3001/';
 
   public getKey(){
-    return this.httpClient.get<PublicKey>(this.url + '/calculator/getKey');
+    return this.httpClient.get<any>(this.url + '/calculator/getKey');
   }
 
   public sum(m1: string, m2:string, n:string){
-    return this.httpClient.post(this.aggregatorUrl+'sum', {m1, m2, n})
+    return this.httpClient.post<any>(this.aggregatorUrl+'sum', {m1, m2, n})
   }
 }

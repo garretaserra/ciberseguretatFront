@@ -24,7 +24,7 @@ export class HomomorphismComponent implements OnInit {
 
   async ngOnInit() {
     let response = await this.paillierService.getKey().toPromise();
-    this.publicKey = new PublicKey(response.n,response.g);
+    this.publicKey = new PublicKey(hexToBigint(response.n), hexToBigint(response.g));
   }
 
 
@@ -36,7 +36,6 @@ export class HomomorphismComponent implements OnInit {
     let m2 = this.publicKey.encrypt(n2);
 
     let res = await this.paillierService.sum(bigintToHex(m1), bigintToHex(m2), bigintToHex(this.publicKey.n)).toPromise();
-    console.log("res: ",res);
-
+    this.result = hexToBigint(res.result).toLocaleString();
   }
 }
