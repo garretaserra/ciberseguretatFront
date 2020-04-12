@@ -12,8 +12,6 @@ import {PublicKey} from "paillier-bigint";
 export class HomomorphismComponent implements OnInit {
 
   Number: string[] = ['', '']
-  Number1 = "";
-  Number2 = "";
   result = "";
   publicKey;
 
@@ -54,30 +52,18 @@ export class HomomorphismComponent implements OnInit {
 
   async Multiply(){
     let n1 = BigInt(this.Number[0]);
-    let m2 = BigInt(this.Number[1]);
+    let m2 = 1n;
     let m1 = this.publicKey.encrypt(n1);
 
     let sortir: boolean = false;
-    let sortida:boolean = false;
-    this.Number.forEach((num)=> {
+    this.Number.forEach((num, index)=> {
       if (isNaN(Number(num))) {
         sortir = true;
       }
-      if(this.Number[2] == num){
-        sortida=true;
+      if(index != 0){
+        m2 = m2 * BigInt(this.Number[index]);
       }
     })
-
-      if(sortir){
-        alert('Posa numeros')
-        return ;
-      }
-
-    if(sortida){
-      alert('Hay + de 2 num ')
-      return ;
-    }
-
 
     let res = await this.paillierService.multiply(bigintToHex(m1), bigintToHex(m2), bigintToHex(this.publicKey.n)).toPromise();
     this.result = hexToBigint(res.result).toLocaleString();
