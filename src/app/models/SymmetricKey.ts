@@ -1,4 +1,4 @@
-class SymmetricKey {
+export class SymmetricKey {
   k: string;
   iv: string;
 

@@ -9,6 +9,10 @@ import {digest} from "object-sha";
 import {NoRepudiationPopUpComponent} from "./no-repudiation-pop-up/no-repudiation-pop-up.component";
 import {MatDialog} from "@angular/material/dialog";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {NoRepudiationMessage} from "./models/NoRepudiationMessage"
+import {SymmetricKey} from "./models/SymmetricKey";
+import {User} from "./models/User";
+import {NoRepudiationBody} from "./models/NoRepudiationBody";
 
 @Component({
   selector: 'app-root',

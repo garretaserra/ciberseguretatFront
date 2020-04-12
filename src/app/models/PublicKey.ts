@@ -1,4 +1,4 @@
-class PublicKey{
+export class PublicKey{
   e: string;
   n: string;
 
