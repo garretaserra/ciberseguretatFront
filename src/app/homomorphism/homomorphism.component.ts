@@ -38,4 +38,14 @@ export class HomomorphismComponent implements OnInit {
     let res = await this.paillierService.sum(bigintToHex(m1), bigintToHex(m2), bigintToHex(this.publicKey.n)).toPromise();
     this.result = hexToBigint(res.result).toLocaleString();
   }
+
+  async Multiply(){
+    let n1 = BigInt(this.Number1);
+    let m2 = BigInt(this.Number2);
+
+    let m1 = this.publicKey.encrypt(n1);
+
+    let res = await this.paillierService.multiply(bigintToHex(m1), bigintToHex(m2), bigintToHex(this.publicKey.n)).toPromise();
+    this.result = hexToBigint(res.result).toLocaleString();
+  }
 }
