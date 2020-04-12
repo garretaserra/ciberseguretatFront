@@ -11,10 +11,12 @@ import {PublicKey} from "paillier-bigint";
 })
 export class HomomorphismComponent implements OnInit {
 
+  Number: string[] = ['', '']
   Number1 = "";
   Number2 = "";
   result = "";
   publicKey;
+
 
   constructor(
     private paillierService: PaillierService
@@ -29,13 +31,24 @@ export class HomomorphismComponent implements OnInit {
 
 
   async Sum() {
-    let n1 = BigInt(this.Number1);
-    let n2 = BigInt(this.Number2);
+    let sortir: boolean = false;
+    this.Number.forEach((num)=>{
+      if(isNaN(Number(num))){
+        sortir= true;
+      }
+    })
+    if(sortir){
+      alert('Posa numeros')
+      return ;
+    }
 
-    let m1 = this.publicKey.encrypt(n1);
-    let m2 = this.publicKey.encrypt(n2);
+    let num: string[] = [];
 
-    let res = await this.paillierService.sum(bigintToHex(m1), bigintToHex(m2), bigintToHex(this.publicKey.n)).toPromise();
+    this.Number.forEach((item)=>{
+      num.push(bigintToHex(this.publicKey.encrypt(BigInt(item))));
+    })
+
+    let res = await this.paillierService.sum(num).toPromise();
     this.result = hexToBigint(res.result).toLocaleString();
   }
 
@@ -47,5 +60,17 @@ export class HomomorphismComponent implements OnInit {
 
     let res = await this.paillierService.multiply(bigintToHex(m1), bigintToHex(m2), bigintToHex(this.publicKey.n)).toPromise();
     this.result = hexToBigint(res.result).toLocaleString();
+  }
+
+  trackByFn(index: any, item: any) {
+    return index;
+  }
+
+  AddNumber() {
+    this.Number.push('');
+  }
+
+  DeleteNumber(i) {
+    this.Number.splice(i,1);
   }
 }

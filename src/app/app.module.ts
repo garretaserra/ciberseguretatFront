@@ -21,6 +21,7 @@ import { NoRepudiationPopUpComponent } from './no-repudiation-pop-up/no-repudiat
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
 import { HomomorphismComponent } from './homomorphism/homomorphism.component';
+import {CommonModule} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -46,7 +47,8 @@ import { HomomorphismComponent } from './homomorphism/homomorphism.component';
     MatIconModule,
     MatButtonToggleModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    CommonModule
   ],
   providers: [
     ChatService,

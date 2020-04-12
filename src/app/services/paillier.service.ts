@@ -19,8 +19,8 @@ export class PaillierService {
     return this.httpClient.get<any>(this.url + '/calculator/getKey');
   }
 
-  public sum(m1: string, m2:string, n:string){
-    return this.httpClient.post<any>(this.aggregatorUrl+'sum', {m1, m2, n})
+  public sum (numbers: string[]){
+    return this.httpClient.post<any>(this.aggregatorUrl+'sum', {numbers})
   }
 
   public multiply(m1: string, m2:string, n:string){
