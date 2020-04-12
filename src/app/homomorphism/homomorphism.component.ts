@@ -65,7 +65,7 @@ export class HomomorphismComponent implements OnInit {
       }
     })
 
-    let res = await this.paillierService.multiply(bigintToHex(m1), bigintToHex(m2), bigintToHex(this.publicKey.n)).toPromise();
+    let res = await this.paillierService.multiply(bigintToHex(m1), bigintToHex(m2)).toPromise();
     this.result = hexToBigint(res.result).toLocaleString();
   }
 

@@ -23,8 +23,8 @@ export class PaillierService {
     return this.httpClient.post<any>(this.aggregatorUrl+'sum', {numbers})
   }
 
-  public multiply(m1: string, m2:string, n:string){
-    return this.httpClient.post<any>(this.aggregatorUrl+'multiply', {m1, m2, n})
+  public multiply(m1: string, m2:string){
+    return this.httpClient.post<any>(this.aggregatorUrl+'multiply', {m1, m2})
   }
 
 }
