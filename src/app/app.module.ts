@@ -21,12 +21,14 @@ import { NoRepudiationPopUpComponent } from './no-repudiation-pop-up/no-repudiat
 import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
 import { HomomorphismComponent } from './homomorphism/homomorphism.component';
+import { SecretSharingComponent } from './secret-sharing/secret-sharing.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NoRepudiationPopUpComponent,
-    HomomorphismComponent
+    HomomorphismComponent,
+    SecretSharingComponent
   ],
   imports: [
     BrowserModule,
