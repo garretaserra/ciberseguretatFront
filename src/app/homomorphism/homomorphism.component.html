@@ -1,42 +1,44 @@
 <p>
-  <mat-grid-list cols="2" rowHeight="400">
+  <mat-grid-list cols="2" rowHeight="700">
     <mat-grid-tile>
-      <mat-card style="background-color: rgb(213, 200, 235); width:90%;">
-        <mat-list-item>
-        <mat-form-field class="full-width" style="margin-top: 1%;margin-bottom: 2%;width: 100%"> Insert Number
-                             <textarea #autosize="cdkTextareaAutosize"
-                                       [(ngModel)]="Number1"
-                                       cdkAutosizeMaxRows="5"
-                                       cdkAutosizeMinRows="1"
-                                       cdkTextareaAutosize
-                                       matInput></textarea>
-        </mat-form-field>
-        </mat-list-item>
+      <mat-card style="background-color: rgb(213, 200, 235); width:70%;">
+        <mat-list-item *ngFor="let num of Number; let i = index; trackBy:trackByFn">
+          <mat-form-field class="full-width" style="margin-top: 1%;margin-bottom: 2%;width: 70%"> Insert Number
+            <textarea #autosize="cdkTextareaAutosize"
+                      [(ngModel)]="Number[i]"
+                      cdkAutosizeMaxRows="5"
+                      cdkAutosizeMinRows="1"
+                      cdkTextareaAutosize
+                      matInput></textarea>
+          </mat-form-field>
+          <button (click)="DeleteNumber(i)"  mat-raised-button style="margin: auto">
+            <mat-icon aria-hidden="false" aria-label="Delete numb er">delete</mat-icon>
+          </button>
           <mat-divider> </mat-divider>
+        </mat-list-item>
+
         <mat-list-item>
-        <mat-form-field class="full-width" style="margin-top: 1%;margin-bottom: 1%;width: 100%"> Insert Number
-          <textarea #autosize="cdkTextareaAutosize"
-                    [(ngModel)]="Number2"
-                    cdkAutosizeMaxRows="5"
-                    cdkAutosizeMinRows="1"
-                    cdkTextareaAutosize
-                    matInput></textarea>
-        </mat-form-field>
-          </mat-list-item>
+          <div style="height: 50px">
+        <button (click)="AddNumber()"  mat-raised-button style="margin: auto; ">Add number</button>
+          </div>
+        </mat-list-item>
+
+        <mat-divider> </mat-divider>
         <mat-list-item style="align-items: center">
-        <button (click)="Sum()"  mat-raised-button style="margin: auto">+</button>
+          <button (click)="Sum()"  mat-raised-button style="margin: auto">+</button>
+          <button (click)="Multiply()"  mat-raised-button style="margin: auto">x</button>
         </mat-list-item>
       </mat-card>
     </mat-grid-tile>
     <mat-grid-tile>
       <mat-card style="background-color: rgb(213, 200, 235); width:90% ">
         <mat-form-field class="full-width"> Result
-                             <textarea #autosize="cdkTextareaAutosize"
-                                       [(ngModel)]="result"
-                                       cdkAutosizeMaxRows="5"
-                                       cdkAutosizeMinRows="1"
-                                       cdkTextareaAutosize
-                                       matInput></textarea>
+          <textarea #autosize="cdkTextareaAutosize"
+                    [(ngModel)]="result"
+                    cdkAutosizeMaxRows="5"
+                    cdkAutosizeMinRows="1"
+                    cdkTextareaAutosize
+                    matInput></textarea>
         </mat-form-field>
       </mat-card>
     </mat-grid-tile>

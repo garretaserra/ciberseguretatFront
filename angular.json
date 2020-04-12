@@ -18,7 +18,7 @@
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
             "tsConfig": "tsconfig.app.json",
-            "aot": false,
+            "aot": true,
             "assets": [
               "src/favicon.ico",
               "src/assets"
@@ -42,7 +42,6 @@
               "sourceMap": false,
               "extractCss": true,
               "namedChunks": false,
-              "aot": true,
               "extractLicenses": true,
               "vendorChunk": false,
               "buildOptimizer": true,
@@ -124,5 +123,8 @@
       }
     }
   },
-  "defaultProject": "ciberseguretatFront"
+  "defaultProject": "ciberseguretatFront",
+  "cli": {
+    "analytics": "d12e9a9f-f355-4ee7-b60c-69c9b346fa57"
+  }
 }

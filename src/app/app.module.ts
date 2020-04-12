@@ -22,6 +22,7 @@ import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
 import { HomomorphismComponent } from './homomorphism/homomorphism.component';
 import { SecretSharingComponent } from './secret-sharing/secret-sharing.component';
+import {CommonModule} from "@angular/common";
 
 @NgModule({
   declarations: [
@@ -48,7 +49,8 @@ import { SecretSharingComponent } from './secret-sharing/secret-sharing.componen
     MatIconModule,
     MatButtonToggleModule,
     MatDialogModule,
-    MatSnackBarModule
+    MatSnackBarModule,
+    CommonModule
   ],
   providers: [
     ChatService,
