@@ -10,7 +10,7 @@ import {MatButtonModule} from "@angular/material/button";
 import {HttpClientModule} from "@angular/common/http";
 import {MatGridListModule} from "@angular/material/grid-list";
 import {MatTabsModule} from "@angular/material/tabs";
-import {MatCheckboxModule} from '@angular/material';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 import {ChatService} from './services/chat.service';
 import {MatDividerModule} from '@angular/material/divider';
 import {MatListModule} from "@angular/material/list";
