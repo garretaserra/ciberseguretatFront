@@ -1,55 +1,47 @@
-import { Injectable } from '@angular/core';
-import * as cryptoUtils from 'bigint-crypto-utils'
+import {Injectable} from '@angular/core';
+import * as cryptoUtils from 'bigint-crypto-utils';
 import BigNumber from 'bignumber.js';
 import {IPoint} from '../models/ipoint';
-import { compileBaseDefFromMetadata } from '@angular/compiler';
-import { IpcNetConnectOpts } from 'net';
+
+// import { compileBaseDefFromMetadata } from '@angular/compiler';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShamirsSecretService {
-  
-  constructor( ) { 
+
+  constructor( ) {
   }
-  
-  private setCoefficients = (t: number) => {
+
+  /*
+  * Generates t random coefficients
+  */
+  private setCoefficients = (t: number, modulus: BigNumber) => {
     let coefficients: BigNumber[] = [];
-    for (let i: number = 0; i < t; i++) coefficients.push(this.randomBignum());
-    console.log('Coefficients');
-    coefficients.forEach((coef, i) => console.log(`a${i} = ${coef}`));
+    while(coefficients.length < t){
+      coefficients.push(this.randomBigNum(modulus));
+    }
+    console.log('Coefficients', coefficients.toString());
     return coefficients;
   }
-  
+
   public getPoints = (n: number, t: number, modulus: BigNumber): IPoint<string>[] => {
     let points: IPoint<string>[] = [];
-    const coefficients: BigNumber[] = this.setCoefficients(t);
-    const _n = BigInt(n); 
-    let x: BigNumber;
-    let y: BigNumber;
-    let p: BigNumber;
-    let m: BigNumber;  
+    const coefficients: BigNumber[] = this.setCoefficients(t, modulus);
+    const _n = BigInt(n);
 
     for (let i: number = 0; i < _n; i++) {
-      x = this.randomBignum();
-      y = new BigNumber(0);
-      
-      coefficients.forEach((coef, r) => {
-        let rBigNum: BigNumber = new BigNumber(r);
-        p = x.pow(rBigNum);
-        m = coef.multipliedBy(p);
-        y = y.plus(m);
-      });     
+      let x = new BigNumber(i);
+      let y = new BigNumber(0);
+
+      coefficients.forEach((coef, exponent) => {
+        let p = x.pow(exponent, modulus);
+        let m = coef.multipliedBy(p);
+        y = y.plus(m).mod(modulus);
+      });
       points.push({ x: x.toString(), y: y.toString()});
     }
     return points;
-  }
-  
-  public getModulus = (): BigNumber => {
-    const _modulus = cryptoUtils.primeSync(8, 5).toString();
-    console.log('MODULUS', _modulus);
-    const modulus: BigNumber = new BigNumber(_modulus);
-    return modulus;
   }
 
   public lagrangeInterpolation = (t: bigint, k: bigint, modulus: bigint, points: IPoint<BigNumber>[]) => {
@@ -75,26 +67,10 @@ export class ShamirsSecretService {
     }
     return secret.toFixed(0);
   }
-  
-  private randomBignum = (): BigNumber => 
-  {
-    const maxBigInt: bigint = 999999n;
-    const randomizedValues: BigNumber[] = [];
-    let randomInt: BigNumber;
-    let randomize: boolean = true;
-    randomInt = new BigNumber(cryptoUtils.randBetween(maxBigInt, 0n).toString());
 
-    while (randomize) {
-      randomInt = new BigNumber(cryptoUtils.randBetween(maxBigInt, 0n).toString());
-      console.log(randomInt);
-      if (!!randomizedValues.length) {
-        for (let val of randomizedValues) {
-          if (val.isEqualTo(randomInt)) break;
-          else { randomize = false; }
-        }
-      }
-      else { randomize = false; }
-    }
-    return randomInt;
+  // Returns an integer BigNumber between 0 and mod
+  public randomBigNum(mod: BigNumber): BigNumber{
+    let numLength = mod.toString().length + 1;
+    return BigNumber.random(numLength).multipliedBy(10**numLength).mod(mod);
   }
 }

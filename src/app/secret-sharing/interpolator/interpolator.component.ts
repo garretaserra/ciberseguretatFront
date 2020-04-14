@@ -9,14 +9,14 @@ import { ShamirsSecretService } from 'src/app/services/shamirs-secret.service';
   styleUrls: ['./interpolator.component.css']
 })
 export class InterpolatorComponent implements OnInit {
-  private points:IPoint<BigNumber>[];
-  private point: string = '';
-  private modulus: string = '';
-  private secret: string; 
+  points:IPoint<BigNumber>[] = [];
+  point: string = '';
+  modulus: string = '';
+  secret: string;
 
-  constructor(private shamirs: ShamirsSecretService) { 
-    this.points = [];
-  }
+  constructor(
+    private shamirs: ShamirsSecretService
+  ) {  }
 
   ngOnInit() {
   }
