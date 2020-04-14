@@ -22,6 +22,8 @@ import {MatDialog, MatDialogModule} from "@angular/material/dialog";
 import {MatSnackBar, MatSnackBarModule} from "@angular/material/snack-bar";
 import { HomomorphismComponent } from './homomorphism/homomorphism.component';
 import { SecretSharingComponent } from './secret-sharing/secret-sharing.component';
+import { GeneratorComponent } from './secret-sharing/generator/generator.component';
+import { InterpolatorComponent } from './secret-sharing/interpolator/interpolator.component';
 import {CommonModule} from "@angular/common";
 
 @NgModule({
@@ -29,7 +31,9 @@ import {CommonModule} from "@angular/common";
     AppComponent,
     NoRepudiationPopUpComponent,
     HomomorphismComponent,
-    SecretSharingComponent
+    SecretSharingComponent,
+    GeneratorComponent,
+    InterpolatorComponent
   ],
   imports: [
     BrowserModule,

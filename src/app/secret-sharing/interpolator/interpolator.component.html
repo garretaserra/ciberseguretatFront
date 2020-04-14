@@ -1,0 +1,30 @@
+<div class="container">
+    <div class="variables">
+        <p>Modulus</p>
+        <mat-form-field>
+            <input [(ngModel)]="modulus" matInput placeholder="17">
+        </mat-form-field>
+        <p>Add Point</p>
+        <mat-form-field>
+            <input [(ngModel)]="point" matInput placeholder="x,y">
+        </mat-form-field>
+        <button (click)="setPoint()" mat-raised-button color="primary">Add Point</button>
+    </div>
+    <div class="pointsDisplay">
+        <mat-card-title>Points</mat-card-title>
+        <mat-card-subtitle>x and y</mat-card-subtitle>
+        <mat-list *ngFor="let point of points" role="list">
+            <mat-list-item role="listitem">
+                <mat-card class="card">{{point.x}},{{point.y}}</mat-card>
+            </mat-list-item>
+        </mat-list>
+    </div>
+</div>
+<div class="interpolation">
+        <button (click)="interpolation()" mat-raised-button color="warn">Execute Lagrange Interpolation</button>
+        <p>Secret</p>
+        <mat-list-item role="listitem">
+            <mat-card class="cardSecret">{{secret}}</mat-card>
+        </mat-list-item>
+</div>
+

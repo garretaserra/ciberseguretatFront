@@ -1,75 +1,100 @@
 import { Injectable } from '@angular/core';
 import * as cryptoUtils from 'bigint-crypto-utils'
-import { NumberSymbol } from '@angular/common';
-import { bigintToHex } from 'bigint-conversion';
+import BigNumber from 'bignumber.js';
+import {IPoint} from '../models/ipoint';
+import { compileBaseDefFromMetadata } from '@angular/compiler';
+import { IpcNetConnectOpts } from 'net';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ShamirsSecretService {
-  private MODULUS: bigint;
   
-  constructor( ) { }
-  
-  public shamirsSecrets = (t: number, n: number) => {
-    const _n = BigInt(n);
-    const _t = BigInt(t);
-    this.MODULUS = 10n;
-    // this.MODULUS = cryptoUtils.primeSync(32, 5);
-    this.lagrangeInterpolation(_t, 0n, this.evaluateFunction(_n, this.setCoefficients(t)));
+  constructor( ) { 
   }
   
   private setCoefficients = (t: number) => {
-    let coefficients: bigint[] = [];
-    for (let i: number = 0; i < t; i++) coefficients.push(this.randomBigint());
-    console.log(`Coefficients -> ${coefficients}`);
+    let coefficients: BigNumber[] = [];
+    for (let i: number = 0; i < t; i++) coefficients.push(this.randomBignum());
+    console.log('Coefficients');
+    coefficients.forEach((coef, i) => console.log(`a${i} = ${coef}`));
     return coefficients;
   }
   
-  private evaluateFunction = (n: bigint, coefficients: bigint[]) => {
-    let points: IPoint[] = [];
-    // let pointd: IPointDict = {};
-    let x: bigint;
-    let y: bigint;
-    
-    for (let i: number = 0; i < n; i++) {
-      x = this.randomBigint();
-      y = 0n;
-      coefficients.forEach((coef, r) => { y = (y + (coef*(x**BigInt(r))))});     
-      points.push({ x: x, y: y});
-      // pointd[i] = { x, y }
+  public getPoints = (n: number, t: number, modulus: BigNumber): IPoint<string>[] => {
+    let points: IPoint<string>[] = [];
+    const coefficients: BigNumber[] = this.setCoefficients(t);
+    const _n = BigInt(n); 
+    let x: BigNumber;
+    let y: BigNumber;
+    let p: BigNumber;
+    let m: BigNumber;  
+
+    for (let i: number = 0; i < _n; i++) {
+      x = this.randomBignum();
+      y = new BigNumber(0);
+      
+      coefficients.forEach((coef, r) => {
+        let rBigNum: BigNumber = new BigNumber(r);
+        p = x.pow(rBigNum);
+        m = coef.multipliedBy(p);
+        y = y.plus(m);
+      });     
+      points.push({ x: x.toString(), y: y.toString()});
     }
-    console.log('POINTS', points);
     return points;
   }
   
-  public lagrangeInterpolation = (t: bigint, k: bigint, points: IPoint[]) => {
-
-    let secret: bigint = 0n;
-    for (let i: number = 0; i < t; i++) {
-      let term: bigint = points[i].y;
-      for (let j: number = 0; j < t; j++) {
-        if (j!=i) {
-          term = (term * (k-points[j].x) / (points[i].x - points[j].x ));
-        }
-      }
-      secret = (secret + term) ;
-    }
-    console.log(`SECRET ${secret}`);
-    return secret;
+  public getModulus = (): BigNumber => {
+    const _modulus = cryptoUtils.primeSync(8, 5).toString();
+    console.log('MODULUS', _modulus);
+    const modulus: BigNumber = new BigNumber(_modulus);
+    return modulus;
   }
 
-  private randomBigint = (): bigint => 
-    cryptoUtils.randBetween(99n, 0n);
-    // return BigInt(Math.round((Math.random() * 1e3)));
+  public lagrangeInterpolation = (t: bigint, k: bigint, modulus: bigint, points: IPoint<BigNumber>[]) => {
+    let numerator: BigNumber;
+    let denomminator: BigNumber;
+    let fraction: BigNumber;
+    let term: BigNumber;
+    const _k: BigNumber = new BigNumber(k.toString());
+    const _modulus: BigNumber = new BigNumber(modulus.toString());
+    let secret: BigNumber = new BigNumber(0);
+
+    for (let i: number = 0; i < t; i++) {
+      term = points[i].y;
+      for (let j: number = 0; j < t; j++) {
+        if (j!=i) {
+          numerator = _k.minus(points[j].x);
+          denomminator = points[i].x.minus(points[j].x);
+          fraction = numerator.dividedBy(denomminator);
+          term = term.multipliedBy(fraction);
+        }
+      }
+      secret = secret.plus(term);
+    }
+    return secret.toFixed(0);
+  }
   
-  
+  private randomBignum = (): BigNumber => 
+  {
+    const maxBigInt: bigint = 999999n;
+    const randomizedValues: BigNumber[] = [];
+    let randomInt: BigNumber;
+    let randomize: boolean = true;
+    randomInt = new BigNumber(cryptoUtils.randBetween(maxBigInt, 0n).toString());
+
+    while (randomize) {
+      randomInt = new BigNumber(cryptoUtils.randBetween(maxBigInt, 0n).toString());
+      console.log(randomInt);
+      if (!!randomizedValues.length) {
+        for (let val of randomizedValues) {
+          if (val.isEqualTo(randomInt)) break;
+          else { randomize = false; }
+        }
+      }
+      else { randomize = false; }
+    }
+    return randomInt;
+  }
 }
-interface IPoint {
-  x: bigint;
-  y: bigint;
-}
-// Index signature
-// interface IPointDict {
-//   [key: number]: IPoint;
-// }

@@ -1,0 +1,24 @@
+<div class="container">
+    <div class="variables">
+        <p>Threshold</p>
+        <mat-form-field>
+            <input [(ngModel)]="t" matInput placeholder="t">
+        </mat-form-field>
+        <p>Shares Quantity</p>
+        <mat-form-field>
+            <input [(ngModel)]="n" matInput placeholder="n">
+        </mat-form-field>
+        <button (click)="getPoints()" mat-raised-button color="primary">Generate Points</button>
+    </div>
+    <div class="pointsDisplay">
+        <mat-card-title>Points</mat-card-title>
+        <mat-card-subtitle>x and y</mat-card-subtitle>
+        <mat-list *ngFor="let point of points" role="list">
+            <mat-list-item role="listitem">
+                <mat-card class="card">{{point.x}},{{point.y}}
+                <button class="copyButton" (click)="copy(point)" mat-raised-button color="secondary">Copy</button>
+                </mat-card>
+            </mat-list-item>
+        </mat-list>
+    </div>
+</div>

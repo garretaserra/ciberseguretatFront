@@ -1,0 +1,23 @@
+.container {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+}
+.variables {
+    display: flex;
+    /* align-items: left;
+    justify-content: left; */
+    flex-direction: column;
+    width: 50%;
+}
+.pointsDisplay {
+    display: flex;
+    /* align-items: right;
+    justify-content: right; */
+    flex-direction: column;
+    width: 50%;
+}
+
+.card {
+    width: 100%;
+}
