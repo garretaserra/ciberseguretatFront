@@ -1,5 +1,4 @@
 import {Injectable} from '@angular/core';
-import * as cryptoUtils from 'bigint-crypto-utils';
 import BigNumber from 'bignumber.js';
 import {IPoint} from '../models/ipoint';
 
@@ -31,26 +30,26 @@ export class ShamirsSecretService {
     const _n = BigInt(n);
 
     for (let i: number = 0; i < _n; i++) {
-      let x = new BigNumber(i);
+      let x = new BigNumber(i+1);
       let y = new BigNumber(0);
 
       coefficients.forEach((coef, exponent) => {
         let p = x.pow(exponent, modulus);
         let m = coef.multipliedBy(p);
         y = y.plus(m).mod(modulus);
+        // console.log('coef', coef.toString(), '\nexp', exponent.toString(), '\nx', x.toString(), '\np', p.toString(), '\nm', m.toString(), '\ny', y.toString())
       });
       points.push({ x: x.toString(), y: y.toString()});
     }
     return points;
   }
 
-  public lagrangeInterpolation = (t: bigint, k: bigint, modulus: bigint, points: IPoint<BigNumber>[]) => {
+  public lagrangeInterpolation = (t: bigint, k: bigint, modulus: BigNumber, points: IPoint<BigNumber>[]) => {
     let numerator: BigNumber;
-    let denomminator: BigNumber;
+    let denominator: BigNumber;
     let fraction: BigNumber;
     let term: BigNumber;
     const _k: BigNumber = new BigNumber(k.toString());
-    const _modulus: BigNumber = new BigNumber(modulus.toString());
     let secret: BigNumber = new BigNumber(0);
 
     for (let i: number = 0; i < t; i++) {
@@ -58,13 +57,15 @@ export class ShamirsSecretService {
       for (let j: number = 0; j < t; j++) {
         if (j!=i) {
           numerator = _k.minus(points[j].x);
-          denomminator = points[i].x.minus(points[j].x);
-          fraction = numerator.dividedBy(denomminator);
+          denominator = points[i].x.minus(points[j].x);
+          fraction = numerator.dividedBy(denominator);
           term = term.multipliedBy(fraction);
         }
       }
       secret = secret.plus(term);
     }
+    if(modulus.isInteger())
+      secret = secret.mod(modulus)
     return secret.toFixed(0);
   }
 

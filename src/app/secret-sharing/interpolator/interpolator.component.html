@@ -2,7 +2,7 @@
     <div class="variables">
         <p>Modulus</p>
         <mat-form-field>
-            <input [(ngModel)]="modulus" matInput placeholder="17">
+            <input [(ngModel)]="modulus" matInput placeholder="modulus">
         </mat-form-field>
         <p>Add Point</p>
         <mat-form-field>
@@ -13,9 +13,10 @@
     <div class="pointsDisplay">
         <mat-card-title>Points</mat-card-title>
         <mat-card-subtitle>x and y</mat-card-subtitle>
-        <mat-list *ngFor="let point of points" role="list">
+        <mat-list *ngFor="let point of points;let i = index" role="list">
             <mat-list-item role="listitem">
                 <mat-card class="card">{{point.x}},{{point.y}}</mat-card>
+                <mat-icon (click)="deletePoint(i)" aria-hidden="false" aria-label="Delete point">delete</mat-icon>
             </mat-list-item>
         </mat-list>
     </div>

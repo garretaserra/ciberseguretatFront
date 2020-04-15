@@ -17,8 +17,9 @@ export class SecretSharingComponent implements OnInit {
    n: string;
    point: string;
 
-  constructor(private shamirs: ShamirsSecretService) { 
+  constructor(private shamirs: ShamirsSecretService) {
     this.points = [];
+    BigNumber.config({ MODULO_MODE: BigNumber.EUCLID })
   }
 
   ngOnInit() {
@@ -37,7 +38,7 @@ export class SecretSharingComponent implements OnInit {
   //   const split: string[] = this.point.split(',');
   //   console.log(split[0]);
   //   console.log(split[1]);
-    
+
   //   const _point: IPoint<BigNumber> = { x: new BigNumber(split[0]), y: new BigNumber(split[1]) };
   //   this.points.push(_point);
   // }

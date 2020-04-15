@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { IPoint } from 'src/app/models/ipoint';
 import BigNumber from 'bignumber.js';
 import { ShamirsSecretService } from 'src/app/services/shamirs-secret.service';
+import {MatSnackBar} from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-interpolator',
@@ -15,7 +16,8 @@ export class InterpolatorComponent implements OnInit {
   secret: string;
 
   constructor(
-    private shamirs: ShamirsSecretService
+    private shamirs: ShamirsSecretService,
+    private snackBar: MatSnackBar
   ) {  }
 
   ngOnInit() {
@@ -29,8 +31,15 @@ export class InterpolatorComponent implements OnInit {
   }
 
   interpolation = () => {
-    const _modulus: bigint = BigInt(this.modulus);
+    const _modulus: BigNumber = new BigNumber(this.modulus);
+    if(!_modulus.isInteger())
+      this.snackBar.open('Calculated without Modulus', '', {duration: 1000});
+
     const _t: bigint = BigInt(this.points.length);
     this.secret = this.shamirs.lagrangeInterpolation(_t, 0n, _modulus, this.points).toString();
+  }
+
+  deletePoint(index: number) {
+    this.points.splice(index, 1);
   }
 }
