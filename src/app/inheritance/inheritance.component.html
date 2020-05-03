@@ -13,20 +13,22 @@
         </mat-card>
       </div>
       <div style="position: absolute; height: 100%; width: 100%">
-        <mat-card class="mat-figure" style="background-color: #673ab747; height: 100%; margin: 5%">
-          <mat-list>
+        <mat-card class="mat-figure" style="background-color: #673ab747; height: 100%; margin: 5%; align-items: baseline">
+          <mat-list style="width: 80%">
             <mat-card-subtitle>Users connected</mat-card-subtitle>
-            <div *ngFor="let user of userList">
-              <mat-card *ngIf="user.username!==selectedUser.username"  style="background-color: #673ab747">
-                <mat-list-item (click)="selectUser(user)" >
-                  {{user.username}}
-                </mat-list-item>
-              </mat-card>
-              <mat-card *ngIf="user.username===selectedUser.username" style="background: #673ab7">
+            <div *ngFor="let user of connectedUserList">
+              <mat-card *ngIf="checkIfSelected(user); else selected" style="background-color: #673ab7">
                 <mat-list-item>
                   {{user.username}}
                 </mat-list-item>
               </mat-card>
+              <ng-template #selected>
+                <mat-card style="background: #673ab747">
+                  <mat-list-item (click)="selectUser(user)" >
+                    {{user.username}}
+                  </mat-list-item>
+                </mat-card>
+              </ng-template>
             </div>
           </mat-list>
         </mat-card>
@@ -39,35 +41,13 @@
           <mat-card style="margin-top: 1%; margin-bottom: 2%; background-color: #673ab747">
             <mat-form-field style="width: 100%">
                  <textarea #autosize="cdkTextareaAutosize"
-                           [(ngModel)]="noRepudiationMessage"
+                           [(ngModel)]="walletSecret"
                            cdkAutosizeMaxRows="5"
                            cdkAutosizeMinRows="3"
                            cdkTextareaAutosize
                            matInput></textarea>
             </mat-form-field>
-            <button mat-raised-button> Send Non Repudiable Message</button>
-          </mat-card>
-          <mat-card style="margin-top: 2%; margin-bottom: 2%; background-color: #673ab747">
-            <mat-form-field style="width: 100%">
-              Pr
-              <textarea #autosize="cdkTextareaAutosize"
-                        [(ngModel)]="PrText"
-                        cdkAutosizeMaxRows="5"
-                        cdkAutosizeMinRows="3"
-                        cdkTextareaAutosize
-                        matInput ></textarea>
-            </mat-form-field>
-          </mat-card>
-          <mat-card style="margin-top: 2%; margin-bottom: 2%; background-color: #673ab747">
-            Pkp
-            <mat-form-field style="width: 100%">
-                       <textarea #autosize="cdkTextareaAutosize"
-                                 [(ngModel)]="PkpText"
-                                 cdkAutosizeMaxRows="5"
-                                 cdkAutosizeMinRows="3"
-                                 cdkTextareaAutosize
-                                 matInput ></textarea>
-            </mat-form-field>
+            <button mat-raised-button (click)="start()">Start</button>
           </mat-card>
         </mat-card>
       </div>
