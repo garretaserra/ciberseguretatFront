@@ -38,6 +38,9 @@
     <mat-grid-tile colspan="2" style="align-content: flex-start;  align-items: flex-start; width: 100%">
       <div class="mat-figure" style="align-items: flex-start">
         <mat-card style="margin-top: 0%; align-items: center; width: 100%; height: 100%; margin-left: 1% ; background-color: #673ab747">
+          <mat-form-field>
+            <input [(ngModel)]="t" matInput placeholder="t">
+          </mat-form-field>
           <mat-card style="margin-top: 1%; margin-bottom: 2%; background-color: #673ab747">
             <mat-form-field style="width: 100%">
                  <textarea #autosize="cdkTextareaAutosize"
@@ -49,6 +52,13 @@
             </mat-form-field>
             <button mat-raised-button (click)="start()">Start</button>
           </mat-card>
+          <div *ngFor="let user of selectedUsers">
+            <mat-list-item>
+              <mat-card>
+                {{user.user.username}}
+              </mat-card>
+            </mat-list-item>
+          </div>
         </mat-card>
       </div>
     </mat-grid-tile>

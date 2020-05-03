@@ -31,7 +31,7 @@ export class GeneratorComponent implements OnInit {
 
     const _t: number = Number(this.t);
     const _n: number = Number(this.n);
-    this.points = this.shamirs.getPoints(_n, _t, mod);
+    this.points = this.shamirs.getPoints(_n, _t, mod, "1234");
   }
 
   copy = (point: IPoint<string>) => {

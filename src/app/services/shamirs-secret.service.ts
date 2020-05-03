@@ -12,21 +12,14 @@ export class ShamirsSecretService {
   constructor( ) {
   }
 
-  /*
-  * Generates t random coefficients
-  */
-  private setCoefficients = (t: number, modulus: BigNumber) => {
-    let coefficients: BigNumber[] = [];
+  public getPoints = (n: number, t: number, modulus: BigNumber, secret: string): IPoint<string>[] => {
+    let points: IPoint<string>[] = [];
+
+    // Generate random coefficients
+    const coefficients: BigNumber[] = [(new BigNumber(secret))]; // First coefficient will be the secret
     while(coefficients.length < t){
       coefficients.push(this.randomBigNum(modulus));
     }
-    console.log('Coefficients', coefficients.toString());
-    return coefficients;
-  }
-
-  public getPoints = (n: number, t: number, modulus: BigNumber): IPoint<string>[] => {
-    let points: IPoint<string>[] = [];
-    const coefficients: BigNumber[] = this.setCoefficients(t, modulus);
     const _n = BigInt(n);
 
     for (let i: number = 0; i < _n; i++) {
