@@ -158,6 +158,7 @@ export class InheritanceComponent implements OnInit {
 
     // Encrypt blinded message with Bob's public key
     c = my_rsa.encrypt(c, hexToBigint(user.user.publicKey.e), hexToBigint(user.user.publicKey.n));
+    user.c = bigintToHex(c);
 
     // Save Key. Key is formed by k and iv.
     this.symKey = {
