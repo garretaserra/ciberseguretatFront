@@ -62,6 +62,24 @@ export class InheritanceComponent implements OnInit {
     console.log('MODULUS', this.modulus.toString());
   }
 
+  getConnectedUserFromUsername(username: string): User{
+    for(let i = 0; i < this.connectedUserList.length; i++){
+      let user = this.connectedUserList[i];
+      if (user.username === username)
+        return  user;
+    }
+    return undefined;
+  }
+
+  getSelectedUserFromUsername(username: string): NoRepudiationUser{
+    for(let i = 0; i < this.selectedUsers.length; i++){
+      let user = this.selectedUsers[i];
+      if (user.user.username === username)
+        return  user;
+    }
+    return undefined;
+  }
+
   login() {
     if (!this.username){
       alert('No username specified');
@@ -98,7 +116,6 @@ export class InheritanceComponent implements OnInit {
   }
 
   deselectUser(username: string){
-    //TODO test
     for(let i = 0; i<this.selectedUsers.length; i++){
       if(this.selectedUsers[i].user.username === username)
         this.selectedUsers.splice(i, 1);
@@ -108,11 +125,8 @@ export class InheritanceComponent implements OnInit {
 
   async getServerPublicKey() {
     const response =  await this.generalService.getPublicKey().toPromise();
-    // this.serverPublicKey = JSON.stringify(response);
-    // const object = JSON.parse(this.serverPublicKey);
     this.serverN = hexToBigint(response.n);
     this.serverE = hexToBigint(response.e);
-    // this.publicEText =  bigintToHex(this.serverE);
   }
 
   checkTimeout(time: string){
@@ -206,21 +220,17 @@ export class InheritanceComponent implements OnInit {
     let hash = await digest(message.body);
 
     // Get public key of sender
-    this.connectedUserList.forEach((user)=>{
-      if(user.username === message.body.origin){
-        let key = user.publicKey;
-        let sig = my_rsa.verify(hexToBigint(message.signature), hexToBigint(key.e), hexToBigint(key.n));
-        if(hash !== bigintToHex(sig)){
-          alert('Verification of Po failed');
-          return ;
-        }
-        else {
-          console.log('Verification of Po passed', hash);
-          this.Po = hexToBigint(message.signature);
-        }
-      }
-    });
-
+    let user = this.getConnectedUserFromUsername(message.body.origin);
+    let key = user.publicKey;
+    let sig = my_rsa.verify(hexToBigint(message.signature), hexToBigint(key.e), hexToBigint(key.n));
+    if(hash !== bigintToHex(sig)){
+      alert('Verification of Po failed');
+      return ;
+    }
+    else {
+      console.log('Verification of Po passed', hash);
+      this.Po = hexToBigint(message.signature);
+    }
 
     message.body.destination = message.body.origin;
     message.body.origin = this.username;
@@ -240,14 +250,9 @@ export class InheritanceComponent implements OnInit {
 
     message.messageType = 'noRepudiation2';
 
-    // Find destination user
-    this.connectedUserList.some((user) => {
-      if (user.username === message.body.destination) {
-        this.ChatService.sendMessageToUser(message, user.id);
-        console.log('Message sent', message);
-        return true;
-      }
-    });
+    // Send response message
+    this.ChatService.sendMessageToUser(message, user.id);
+    console.log('Message sent', message);
   }
 
   async publishNoRepudiationMessage(message) {
@@ -260,21 +265,11 @@ export class InheritanceComponent implements OnInit {
       return;
     }
 
-
-    let sender : User;
-    this.connectedUserList.forEach((user) => {
-      if (user.username === message.body.origin)
-        sender = user;
-    });
+    let sender = this.getConnectedUserFromUsername(message.body.origin);
 
     //Find noRepudiationUser from sender
-    let noRepudiationUser: NoRepudiationUser;
-    this.selectedUsers.forEach((user) => {
-      if (user.user.username === message.body.origin){
-        message.body.c = user.c;
-        noRepudiationUser = user
-      }
-    });
+    let noRepudiationUser = this.getSelectedUserFromUsername(message.body.origin);
+    message.body.c = noRepudiationUser.c;
 
     // Check signature
     let hash = await digest(message.body);
@@ -326,11 +321,11 @@ export class InheritanceComponent implements OnInit {
         console.log('Verification of Pkp passed', hash);
       }
 
-
       // Analyse published message to see if you are Alice or Bob and display info
       if(message.body.destination === this.username){
         // Alice
-
+        let bob = this.getSelectedUserFromUsername(message.body.destination2);
+        bob.Pkp = message.signature;
       }
       else if(message.body.destination2 == this.username) {
         // Bob
@@ -344,9 +339,9 @@ export class InheritanceComponent implements OnInit {
           bufView[i] = str.charCodeAt(i);
         }
         let iv = bufView;
-        let key = message.body.k.k;
-        let jwk = await AESCBCModule.importKey(key);
-        console.log(3)
+
+        const key = message.body.k.k;
+        const jwk = await AESCBCModule.importKey(key);
         const m = await AESCBCModule.decryptMessage(this.c, jwk, iv).catch((error)=>console.log(error));
         let msg = bufToText(m);
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
