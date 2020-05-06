@@ -268,9 +268,12 @@ export class InheritanceComponent implements OnInit {
     });
 
     //Find noRepudiationUser from sender
+    let noRepudiationUser: NoRepudiationUser;
     this.selectedUsers.forEach((user) => {
-      if (user.user.username === message.body.origin)
+      if (user.user.username === message.body.origin){
         message.body.c = user.c;
+        noRepudiationUser = user
+      }
     });
 
     // Check signature
@@ -285,7 +288,7 @@ export class InheritanceComponent implements OnInit {
       return;
     } else{
       console.log('Verification of Pr passed', hash);
-      // this.PrText = message.signature;
+      noRepudiationUser.Pr = message.signature;
     }
 
     // Refactor message
@@ -335,9 +338,9 @@ export class InheritanceComponent implements OnInit {
 
         //  Convert iv: string to iv: Uint8Array
         let str = message.body.k.iv;
-        var buf = new ArrayBuffer(str.length); // 2 bytes for each char
-        var bufView = new Uint8Array(buf);
-        for (var i = 0, strLen = str.length; i < strLen; i++) {
+        let buf = new ArrayBuffer(str.length); // 2 bytes for each char
+        let bufView = new Uint8Array(buf);
+        for (let i = 0, strLen = str.length; i < strLen; i++) {
           bufView[i] = str.charCodeAt(i);
         }
         let iv = bufView;

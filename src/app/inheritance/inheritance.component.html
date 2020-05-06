@@ -56,6 +56,8 @@
             <mat-list-item>
               <mat-card>
                 {{user.user.username}}
+                <mat-icon *ngIf="user.Pr">check_circle</mat-icon>
+                <mat-icon (click)="deselectUser(user.user.username)" aria-hidden="false" aria-label="Delete point">delete</mat-icon>
               </mat-card>
             </mat-list-item>
           </div>
