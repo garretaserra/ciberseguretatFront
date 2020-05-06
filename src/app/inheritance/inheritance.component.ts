@@ -127,6 +127,7 @@ export class InheritanceComponent implements OnInit {
     // Generate secret parts
     let points: IPoint<string>[] =
       this.shamirsSecretSharing.getPoints(this.selectedUsers.length, this.t, this.modulus, this.walletSecret);
+    console.log(points);
 
     //Assign secrets to selected users
     this.selectedUsers.forEach((selectedUser, index)=>{
@@ -269,7 +270,7 @@ export class InheritanceComponent implements OnInit {
     //Find noRepudiationUser from sender
     this.selectedUsers.forEach((user) => {
       if (user.user.username === message.body.origin)
-        message.body.c = user.c;  //TODO doesnt work
+        message.body.c = user.c;
     });
 
     // Check signature
@@ -308,18 +309,19 @@ export class InheritanceComponent implements OnInit {
       console.log('Received message ', message);
 
       // Get servers public key
-      await this.getServerPublicKey();
+      // if(!this.serverE)
+      //   await this.getServerPublicKey();
 
       // Check signature
-      let hash = await digest(message.body);
-
-      let sig = my_rsa.verify(hexToBigint(message.signature), this.serverE, this.serverN);
-      if (hash !== bigintToHex(sig)) {
-        alert('Verification of Pkp failed');
-        return;
-      } else{
-        console.log('Verification of Pkp passed', hash);
-      }
+      // let hash = await digest(message.body);
+      //
+      // let sig = my_rsa.verify(hexToBigint(message.signature), this.serverE, this.serverN);
+      // if (hash !== bigintToHex(sig)) {
+      //   alert('Verification of Pkp failed');
+      //   return;
+      // } else{
+      //   console.log('Verification of Pkp passed', hash);
+      // }
 
 
       // Analyse published message to see if you are Alice or Bob and display info
@@ -332,20 +334,21 @@ export class InheritanceComponent implements OnInit {
         // this.Pkp = hexToBigint(message.signature);
 
         //  Convert iv: string to iv: Uint8Array
+        console.log(1)
         let str = message.body.k.iv;
         var buf = new ArrayBuffer(str.length); // 2 bytes for each char
         var bufView = new Uint8Array(buf);
         for (var i = 0, strLen = str.length; i < strLen; i++) {
           bufView[i] = str.charCodeAt(i);
         }
-
+        console.log(2)
         let iv = bufView;
         let key = message.body.k.k;
         let jwk = await AESCBCModule.importKey(key);
-
-        const m = await AESCBCModule.decryptMessage(this.c, jwk, iv);
+        console.log(3)
+        const m = await AESCBCModule.decryptMessage(this.c, jwk, iv).catch((error)=>console.log(error));
         let msg = bufToText(m);
-
+        console.log(4)
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
           width: '500px',
           data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(message.signature), username: message.body.destination, message: msg}
