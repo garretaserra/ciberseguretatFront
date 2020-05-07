@@ -242,7 +242,7 @@ export class InheritanceComponent implements OnInit {
       width: '200px',
       data: {username: message.body.origin, Po: bigintToHex(this.Po)}
     });
-    confirmationDialog.afterClosed().subscribe(result=>{
+    confirmationDialog.beforeClosed().subscribe(async result=>{
       // If message wants to be received, continue with no repudiation otherwise do nothing
       if(result === 'accept')
         this.continueAnswerNoRepudiation(message);
@@ -321,6 +321,10 @@ export class InheritanceComponent implements OnInit {
 
   handlePublishedMessages() {
     this.ChatService.receiveBroadcastsNoRepudiation().subscribe(async (message: any) => {
+      // Check if message is directed at you
+      if(message.body.destination !== this.username && message.body.destination2 !== this.username)
+        return;
+
       console.log('Received message ', message);
 
       // Check signature
@@ -331,7 +335,7 @@ export class InheritanceComponent implements OnInit {
         alert('Verification of Pkp failed');
         return;
       } else{
-        console.log('Verification of Pkp passed', hash);
+        console.log('Verification of Pkp passed');
       }
 
       // Analyse published message to see if you are Alice or Bob and display info

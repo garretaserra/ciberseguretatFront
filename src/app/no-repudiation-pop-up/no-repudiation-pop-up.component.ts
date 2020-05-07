@@ -1,4 +1,4 @@
-import {Component, Inject, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material/dialog";
 
 export interface DialogData {
@@ -11,7 +11,8 @@ export interface DialogData {
 @Component({
   selector: 'app-no-repudiation-pop-up',
   templateUrl: './no-repudiation-pop-up.component.html',
-  styleUrls: ['./no-repudiation-pop-up.component.css']
+  styleUrls: ['./no-repudiation-pop-up.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 
 export class NoRepudiationPopUpComponent implements OnInit {
