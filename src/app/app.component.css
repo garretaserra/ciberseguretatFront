@@ -10,7 +10,7 @@
   position: absolute;
   display: flex;
   align-items: flex-start;
-  justify-content: start;
+  justify-content: flex-start;
 
 }
 
