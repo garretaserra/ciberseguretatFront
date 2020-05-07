@@ -18,6 +18,7 @@ import {NoRepudiationBody} from "../models/NoRepudiationBody";
 import {digest} from "object-sha";
 import {NoRepudiationMessage} from "../models/NoRepudiationMessage";
 import {NoRepudiationPopUpComponent} from "../no-repudiation-pop-up/no-repudiation-pop-up.component";
+import {InheritanceConfirmationPopUpComponent} from "../inheritance-confirmation-pop-up/inheritance-confirmation-pop-up.component";
 
 @Component({
   selector: 'app-inheritance',
@@ -41,7 +42,6 @@ export class InheritanceComponent implements OnInit {
   connectedUserList: User[];
   selectedUsers: NoRepudiationUser[] = [];
   walletSecret = '';
-  symKey: SymmetricKey;
   c: bigint;
   t: number;
   Po: bigint;
@@ -61,6 +61,12 @@ export class InheritanceComponent implements OnInit {
     cryptoUtils.prime(64, 5).then((prime)=>{
       this.modulus = new BigNumber(prime.toString());
       console.log('MODULUS', this.modulus.toString());
+    })
+
+    // Get public key of TTP
+    this.generalService.getPublicKey().toPromise().then((response)=>{
+      this.serverN = hexToBigint(response.n);
+      this.serverE = hexToBigint(response.e);
     })
   }
 
@@ -125,12 +131,6 @@ export class InheritanceComponent implements OnInit {
     }
   }
 
-  async getServerPublicKey() {
-    const response =  await this.generalService.getPublicKey().toPromise();
-    this.serverN = hexToBigint(response.n);
-    this.serverE = hexToBigint(response.e);
-  }
-
   checkTimeout(time: string){
     const localTimestamp = Date.now();
     const remoteTimestamp = parseInt(time, 10);
@@ -143,7 +143,6 @@ export class InheritanceComponent implements OnInit {
     // Generate secret parts
     let points: IPoint<string>[] =
       this.shamirsSecretSharing.getPoints(this.selectedUsers.length, this.t, this.modulus, this.walletSecret);
-    console.log(points);
 
     //Assign secrets to selected users
     this.selectedUsers.forEach((selectedUser, index)=>{
@@ -152,7 +151,7 @@ export class InheritanceComponent implements OnInit {
 
     //Start no repudiation with each selected user
     this.selectedUsers.forEach((selectedUser, index)=>{
-      setTimeout(()=> {this.startNonRepudiableMessage(selectedUser);}, index*1000)
+      this.startNonRepudiableMessage(selectedUser);
     })
   }
 
@@ -178,7 +177,7 @@ export class InheritanceComponent implements OnInit {
     user.c = bigintToHex(c);
 
     // Save Key. Key is formed by k and iv.
-    this.symKey = {
+    user.symKey = {
       k: key.k,
       iv: String.fromCharCode.apply(null, iv) // Convert iv to String
     };
@@ -196,7 +195,6 @@ export class InheritanceComponent implements OnInit {
 
     const hash = await digest(body);
     const Po = bigintToHex(this.rsa.sign(hexToBigint(hash)));
-    console.log('Po', Po);
 
     const message: NoRepudiationMessage = {
       messageType: 'noRepudiation1',
@@ -224,8 +222,10 @@ export class InheritanceComponent implements OnInit {
     // Get public key of sender
     let user = this.getConnectedUserFromUsername(message.body.origin);
     let key = user.publicKey;
+
+    // Verify signature is correct
     let sig = my_rsa.verify(hexToBigint(message.signature), hexToBigint(key.e), hexToBigint(key.n));
-    if(hash !== bigintToHex(sig)){
+    if(hexToBigint(hash) !== sig){
       alert('Verification of Po failed');
       return ;
     }
@@ -234,13 +234,24 @@ export class InheritanceComponent implements OnInit {
       this.Po = hexToBigint(message.signature);
     }
 
+    const confirmationDialog = this.dialog.open(InheritanceConfirmationPopUpComponent, {
+      width: '200px',
+      data: {username: message.body.origin, Po: bigintToHex(this.Po)}
+    });
+    confirmationDialog.afterClosed().subscribe(result=>{
+      // If message wants to be received, continue with no repudiation otherwise do nothing
+      if(result === 'accept')
+        this.continueAnswerNoRepudiation(message);
+    });
+  }
+
+  async continueAnswerNoRepudiation(message){
     message.body.destination = message.body.origin;
     message.body.origin = this.username;
-    // Get timestamp
-    message.body.timestamp = Date.now().toString();
+    message.body.timestamp = Date.now().toString();// Get timestamp
 
     // Get Proof of Reception: Pr
-    hash = await digest(message.body);
+    let hash = await digest(message.body);
     message.signature = bigintToHex(this.rsa.sign(hexToBigint(hash)));
 
     // Save Cipher locally and remove it from message
@@ -253,6 +264,7 @@ export class InheritanceComponent implements OnInit {
     message.messageType = 'noRepudiation2';
 
     // Send response message
+    let user = this.getConnectedUserFromUsername(message.body.destination);
     this.ChatService.sendMessageToUser(message, user.id);
     console.log('Message sent', message);
   }
@@ -279,8 +291,7 @@ export class InheritanceComponent implements OnInit {
     // Get public key of sender
     let key = sender.publicKey;
     let sig = my_rsa.verify(hexToBigint(message.signature), hexToBigint(key.e), hexToBigint(key.n));
-    console.log(hash, bigintToHex(sig), key);
-    if (hash !== bigintToHex(sig)) {
+    if (hexToBigint(hash) !== sig) {
       alert('Verification of Pr failed');
       return;
     } else{
@@ -293,7 +304,7 @@ export class InheritanceComponent implements OnInit {
     message.body.destination = 'TTP';
     message.body.destination2 = message.body.origin;
     message.body.origin = this.username;
-    message.body.k = this.symKey;
+    message.body.k = noRepudiationUser.symKey;
     message.body.timestamp = Date.now().toString();
 
     // Get Proof of Reception of K: Pko
@@ -308,15 +319,11 @@ export class InheritanceComponent implements OnInit {
     this.ChatService.receiveBroadcastsNoRepudiation().subscribe(async (message: any) => {
       console.log('Received message ', message);
 
-      // Get servers public key
-      if(!this.serverE)
-        await this.getServerPublicKey();
-
       // Check signature
       let hash = await digest(message.body);
 
       let sig = my_rsa.verify(hexToBigint(message.signature), this.serverE, this.serverN);
-      if (hash !== bigintToHex(sig)) {
+      if (hexToBigint(hash) !== sig) {
         alert('Verification of Pkp failed');
         return;
       } else{
@@ -344,7 +351,7 @@ export class InheritanceComponent implements OnInit {
 
         const key = message.body.k.k;
         const jwk = await AESCBCModule.importKey(key);
-        const m = await AESCBCModule.decryptMessage(this.c, jwk, iv).catch((error)=>console.log(error));
+        const m = await AESCBCModule.decryptMessage(this.c, jwk, iv);
         let msg = bufToText(m);
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
           width: '500px',
