@@ -58,8 +58,10 @@ export class InheritanceComponent implements OnInit {
     this.handlePublishedMessages();
 
     //Generate a new random Modulus
-    this.modulus = new BigNumber(cryptoUtils.primeSync(64, 5).toString());
-    console.log('MODULUS', this.modulus.toString());
+    cryptoUtils.prime(64, 5).then((prime)=>{
+      this.modulus = new BigNumber(prime.toString());
+      console.log('MODULUS', this.modulus.toString());
+    })
   }
 
   getConnectedUserFromUsername(username: string): User{
