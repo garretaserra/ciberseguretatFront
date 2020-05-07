@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import {User} from "../models/User";
-import {SymmetricKey} from "../models/SymmetricKey";
 import {bigintToHex, bufToText, hexToBigint} from "bigint-conversion";
 import {MatDialog} from "@angular/material/dialog";
 import {MatSnackBar} from "@angular/material/snack-bar";
