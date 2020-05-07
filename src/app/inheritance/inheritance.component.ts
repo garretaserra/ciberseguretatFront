@@ -273,6 +273,34 @@ export class InheritanceComponent implements OnInit {
     console.log('Message sent', message);
   }
 
+  publish() {
+    this.selectedUsers.forEach(async (selectedUser)=>{
+      // If user hasn't answered, don't publish its encrypted part of the secret
+      if(!selectedUser.Pr)
+        return;
+
+      // Build message
+      let message: NoRepudiationMessage = {
+        messageType: 'noRepudiation3',
+        signature: '',
+        body: {
+          destination: 'TTP',
+          destination2: selectedUser.user.username,
+          origin: this.username,
+          timestamp: Date.now().toString(),
+          k: selectedUser.symKey,
+        }
+      };
+
+      // Get Proof of Reception of K: Pko
+      digest(message.body).then((hash)=>{
+        message.signature = bigintToHex(this.rsa.sign(hexToBigint(hash)));
+        console.log('Message sent', message);
+        this.ChatService.publishMessage(message);
+      })
+    })
+  }
+
   async publishNoRepudiationMessage(message) {
     // Receives answer from Bob (2nd message of no repudiation) and sends message to publish to TTP (3rd message of no repudiation)
     console.log('Received message', message);
@@ -302,21 +330,6 @@ export class InheritanceComponent implements OnInit {
       console.log('Verification of Pr passed');
       noRepudiationUser.Pr = message.signature;
     }
-
-    // Refactor message
-    message.messageType = 'noRepudiation3';
-    message.body.destination = 'TTP';
-    message.body.destination2 = message.body.origin;
-    message.body.origin = this.username;
-    message.body.k = noRepudiationUser.symKey;
-    message.body.timestamp = Date.now().toString();
-
-    // Get Proof of Reception of K: Pko
-    hash = await digest(message.body);
-    message.signature = bigintToHex(this.rsa.sign(hexToBigint(hash)));
-
-    console.log('Message sent', message);
-    this.ChatService.publishMessage(message);
   }
 
   handlePublishedMessages() {
