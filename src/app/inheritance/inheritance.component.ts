@@ -87,10 +87,15 @@ export class InheritanceComponent implements OnInit {
     return undefined;
   }
 
-  login() {
+  delay(timer=2000){ return new Promise(resolve => setTimeout(resolve, timer)); }
+
+  async login() {
     if (!this.username){
       alert('No username specified');
       return;
+    }
+    while(!this.rsa.publicKey.e || ! this.rsa.publicKey.n){
+      await this.delay(1000);
     }
     this.ChatService.login(this.username, JSON.stringify(
       {e: bigintToHex(this.rsa.publicKey.e), n: bigintToHex(this.rsa.publicKey.n)}
@@ -229,7 +234,7 @@ export class InheritanceComponent implements OnInit {
       return ;
     }
     else {
-      console.log('Verification of Po passed', hash);
+      console.log('Verification of Po passed');
       this.Po = hexToBigint(message.signature);
     }
 
@@ -294,7 +299,7 @@ export class InheritanceComponent implements OnInit {
       alert('Verification of Pr failed');
       return;
     } else{
-      console.log('Verification of Pr passed', hash);
+      console.log('Verification of Pr passed');
       noRepudiationUser.Pr = message.signature;
     }
 
