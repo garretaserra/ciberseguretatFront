@@ -25,6 +25,8 @@ import {InheritanceConfirmationPopUpComponent} from "../inheritance-confirmation
   styleUrls: ['./inheritance.component.css']
 })
 export class InheritanceComponent implements OnInit {
+  TIME: number = 60;
+  interval;
 
   constructor(
     public dialog: MatDialog,
@@ -68,6 +70,33 @@ export class InheritanceComponent implements OnInit {
       this.serverN = hexToBigint(response.n);
       this.serverE = hexToBigint(response.e);
     })
+
+  }
+
+  resetTimer = () => {
+    this.TIME = 60;
+    clearInterval(this.interval);
+    this.toggleDivDisplay('timer');
+  }
+
+  startTimer = () => {
+    this.interval = setInterval(() => {
+      if(this.TIME > 0) {
+        this.TIME--;
+      } 
+      else {
+        this.resetTimer();
+      }
+    }, 1000)
+  }
+
+  toggleDivDisplay = (div: string) => {
+    var x = document.getElementById(div);
+    if (x.style.display === "none") {
+      x.style.display = "block";
+    } else {
+      x.style.display = "none";
+    }
   }
 
   getConnectedUserFromUsername(username: string): User{
@@ -103,6 +132,7 @@ export class InheritanceComponent implements OnInit {
       ));
     this.snackBar.open('Logged in','ok', {duration: 1000});
     this.lockLoginButton = true;
+    this.toggleDivDisplay('timer');
   }
 
   selectUser(user) {
@@ -159,6 +189,8 @@ export class InheritanceComponent implements OnInit {
     this.selectedUsers.forEach((selectedUser, index)=>{
       this.startNonRepudiableMessage(selectedUser);
     })
+    // this.toggleDivDisplay("timer");
+    this.startTimer();
   }
 
   handlePrivateMessages() {
@@ -291,6 +323,8 @@ export class InheritanceComponent implements OnInit {
           origin: this.username,
           timestamp: Date.now().toString(),
           k: selectedUser.symKey,
+          modulus: this.modulus.toString(),
+          threshold: this.t
         }
       };
 
@@ -378,7 +412,9 @@ export class InheritanceComponent implements OnInit {
         let msg = bufToText(m);
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
           width: '500px',
-          data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(message.signature), username: message.body.destination, message: msg}
+          data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(message.signature), 
+            username: message.body.destination, message: msg, modulus: message.body.modulus,
+          threshold: message.body.threshold}
         });
         dialogRef.afterClosed().subscribe(result=>{
           console.log('Closed pop up')

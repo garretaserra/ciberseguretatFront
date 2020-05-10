@@ -1,3 +1,8 @@
-<p>No repudiation message from: {{data.username}}</p>
-<button mat-raised-button (click)="buttonClick('accept')">Accept</button>
-<button mat-raised-button (click)="buttonClick('ignore')">Ignore</button>
+<div class="display">
+    <p>No repudiation message from: {{data.username}}</p>
+    <p>{{TIME}}</p>
+</div>
+<div class="buttons">
+    <button mat-raised-button (click)="buttonClick('accept')">Accept</button>
+    <button mat-raised-button (click)="buttonClick('ignore')">Ignore</button>
+</div>

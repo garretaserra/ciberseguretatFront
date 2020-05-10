@@ -13,13 +13,18 @@ export interface DialogData {
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class InheritanceConfirmationPopUpComponent implements OnInit {
-
+  
+  TIME: number = 60000; // Miliseconds
+  interval;
   constructor(
     public dialogRef: MatDialogRef<InheritanceConfirmationPopUpComponent>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData
   ) {  }
 
   ngOnInit(): void {
+    setTimeout(() => {
+      this.buttonClick('ignore');
+    }, this.TIME);
   }
 
   buttonClick(choice: string){

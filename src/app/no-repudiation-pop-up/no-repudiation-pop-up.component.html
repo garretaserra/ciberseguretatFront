@@ -2,12 +2,28 @@
   {{data.username}}
 </div>
 <div>
+  Modulus:
+  <mat-form-field style="width: 50%">
+    <textarea #autosize="cdkTextareaAutosize"
+              [(ngModel)]="data.modulus"
+              cdkTextareaAutosize
+              matInput></textarea>
+  </mat-form-field>
+</div>
+<div>
+  Threshold:
+  <mat-form-field style="width: 50%">
+    <textarea #autosize="cdkTextareaAutosize"
+              [(ngModel)]="data.threshold"
+              cdkTextareaAutosize
+              matInput></textarea>
+  </mat-form-field>
+</div>
+<div>
   Message:
   <mat-form-field style="width: 50%">
     <textarea #autosize="cdkTextareaAutosize"
               [(ngModel)]="data.message"
-              cdkAutosizeMaxRows="5"
-              cdkAutosizeMinRows="3"
               cdkTextareaAutosize
               matInput></textarea>
   </mat-form-field>

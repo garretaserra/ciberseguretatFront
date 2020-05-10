@@ -41,6 +41,9 @@
           <mat-form-field>
             <input [(ngModel)]="t" matInput placeholder="t">
           </mat-form-field>
+          <div id="timer" class="timer" style="display: none;">
+            Waiting for response: {{TIME}}
+          </div>
           <mat-card style="margin-top: 1%; margin-bottom: 2%; background-color: #673ab747">
             <mat-form-field style="width: 100%">
                  <textarea #autosize="cdkTextareaAutosize"
@@ -61,7 +64,7 @@
                 <mat-icon *ngIf="user.Pkp; else clear">check_circle</mat-icon>
                 <ng-template #clear><mat-icon>clear</mat-icon></ng-template>
                 <mat-icon (click)="deselectUser(user.user.username)" aria-hidden="false" aria-label="Delete point">delete</mat-icon>
-              </mat-card>
+              </mat-card>  
             </mat-list-item>
           </div>
         </mat-card>
