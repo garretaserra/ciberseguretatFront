@@ -57,9 +57,10 @@ export class InheritanceComponent implements OnInit {
     this.handlePublishedMessages();
 
     //Generate a new random Modulus
-    cryptoUtils.prime(64, 5).then((prime)=>{
+    //TODO: If bit length is 1024 it doesnt work
+    cryptoUtils.prime(1024, 5).then((prime)=>{
       this.modulus = new BigNumber(prime.toString());
-      console.log('MODULUS', this.modulus.toString());
+      console.log('MODULUS', this.modulus.toFixed());
     })
 
     // Get public key of TTP
@@ -87,7 +88,7 @@ export class InheritanceComponent implements OnInit {
     return undefined;
   }
 
-  delay(timer=2000){ return new Promise(resolve => setTimeout(resolve, timer)); }
+  delay(timer){ return new Promise(resolve => setTimeout(resolve, timer)); }
 
   async login() {
     if (!this.username){
@@ -95,7 +96,7 @@ export class InheritanceComponent implements OnInit {
       return;
     }
     while(!this.rsa.publicKey.e || ! this.rsa.publicKey.n){
-      await this.delay(1000);
+      await this.delay(500);
     }
     this.ChatService.login(this.username, JSON.stringify(
       {e: bigintToHex(this.rsa.publicKey.e), n: bigintToHex(this.rsa.publicKey.n)}
@@ -147,6 +148,7 @@ export class InheritanceComponent implements OnInit {
     // Generate secret parts
     let points: IPoint<string>[] =
       this.shamirsSecretSharing.getPoints(this.selectedUsers.length, this.t, this.modulus, this.walletSecret);
+    console.log('points', points);
 
     //Assign secrets to selected users
     this.selectedUsers.forEach((selectedUser, index)=>{
