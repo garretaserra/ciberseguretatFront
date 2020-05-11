@@ -244,7 +244,7 @@ export class AppComponent {
         key = user.publicKey;
     });
     let sig = my_rsa.verify(hexToBigint(message.signature), hexToBigint(key.e), hexToBigint(key.n));
-    if(hash !== bigintToHex(sig)){
+    if(hexToBigint(hash) !== sig){
       alert('Verification of Po failed');
       return ;
     }
@@ -307,7 +307,7 @@ export class AppComponent {
     });
     let sig = my_rsa.verify(hexToBigint(message.signature), hexToBigint(key.e), hexToBigint(key.n));
     console.log(hash, bigintToHex(sig), key);
-    if (hash !== bigintToHex(sig)) {
+    if (hexToBigint(hash) !== sig) {
       alert('Verification of Pr failed');
       return;
     } else{
@@ -342,7 +342,7 @@ export class AppComponent {
       let hash = await digest(message.body);
 
       let sig = my_rsa.verify(hexToBigint(message.signature), this.serverE, this.serverN);
-      if (hash !== bigintToHex(sig)) {
+      if (hexToBigint(hash) !== sig) {
         alert('Verification of Pkp failed');
         return;
       } else{
