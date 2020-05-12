@@ -69,12 +69,12 @@ export class HomomorphismComponent implements OnInit {
     })
 
       if(sortir){
-        alert('Posa numeros')
+        alert('Únicamente se permiten números')
         return ;
       }
 
     if(sortida){
-      alert('Hay + de 2 num ')
+      alert('Hay más de dos números ')
       return ;
     }
 
