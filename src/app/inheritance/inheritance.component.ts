@@ -47,7 +47,6 @@ export class InheritanceComponent implements OnInit {
   t: number;
   Po: bigint;
   lockLoginButton :boolean = false;
-
   modulus: BigNumber;
 
   serverE;
@@ -73,6 +72,29 @@ export class InheritanceComponent implements OnInit {
 
   }
 
+  checkRepudiationAsnwers = () => {
+  let noAnwser: Boolean = false;
+  let i :number = 0;
+    while (i < this.selectedUsers.length && !noAnwser ){
+      if(typeof this.selectedUsers[i].Pr == 'undefined') {
+        noAnwser = true;
+        break;
+      }
+      i++;
+    }
+    return noAnwser;
+
+  // this.selectedUsers.forEach(selectedUser => {
+  //   console.log('selected users.Pr', selectedUser.Pr);
+  //     if(typeof selectedUser.Pr !== 'undefined') {
+  //       noAnwser = true;
+  //       return noAnwser;
+  //     }
+  //   });
+  //   return noAnwser;
+  }
+
+
   resetTimer = () => {
     this.TIME = 60;
     clearInterval(this.interval);
@@ -80,8 +102,9 @@ export class InheritanceComponent implements OnInit {
   }
 
   startTimer = () => {
+    let noAnwser: Boolean = true;
     this.interval = setInterval(() => {
-      if(this.TIME > 0) {
+      if(this.TIME > 0 && this.checkRepudiationAsnwers()) {
         this.TIME--;
       } 
       else {
@@ -132,7 +155,7 @@ export class InheritanceComponent implements OnInit {
       ));
     this.snackBar.open('Logged in','ok', {duration: 1000});
     this.lockLoginButton = true;
-    this.toggleDivDisplay('timer');
+    // this.toggleDivDisplay('timer');
   }
 
   selectUser(user) {
@@ -189,7 +212,7 @@ export class InheritanceComponent implements OnInit {
     this.selectedUsers.forEach((selectedUser, index)=>{
       this.startNonRepudiableMessage(selectedUser);
     })
-    // this.toggleDivDisplay("timer");
+    this.toggleDivDisplay("timer");
     this.startTimer();
   }
 
@@ -312,7 +335,6 @@ export class InheritanceComponent implements OnInit {
       // If user hasn't answered, don't publish its encrypted part of the secret
       if(!selectedUser.Pr)
         return;
-
       // Build message
       let message: NoRepudiationMessage = {
         messageType: 'noRepudiation3',
