@@ -57,8 +57,7 @@ export class InheritanceComponent implements OnInit {
     this.handlePublishedMessages();
 
     //Generate a new random Modulus
-    //TODO: If bit length is 1024 it doesnt work
-    cryptoUtils.prime(1024, 5).then((prime)=>{
+    cryptoUtils.prime(512, 5).then((prime)=>{
       this.modulus = new BigNumber(prime.toString());
       console.log('MODULUS', this.modulus.toFixed());
     })
