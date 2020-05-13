@@ -105,7 +105,7 @@ export class InheritanceComponent implements OnInit {
     this.interval = setInterval(() => {
       if(this.TIME > 0 && this.checkRepudiationAsnwers()) {
         this.TIME--;
-      } 
+      }
       else {
         this.resetTimer();
       }
@@ -344,7 +344,7 @@ export class InheritanceComponent implements OnInit {
           origin: this.username,
           timestamp: Date.now().toString(),
           k: selectedUser.symKey,
-          modulus: this.modulus.toString(),
+          modulus: this.modulus.toFixed(),
           threshold: this.t
         }
       };
@@ -433,7 +433,7 @@ export class InheritanceComponent implements OnInit {
         let msg = bufToText(m);
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
           width: '500px',
-          data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(message.signature), 
+          data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(message.signature),
             username: message.body.destination, message: msg, modulus: message.body.modulus,
           threshold: message.body.threshold}
         });
