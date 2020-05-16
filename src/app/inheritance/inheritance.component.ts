@@ -68,31 +68,20 @@ export class InheritanceComponent implements OnInit {
       this.serverN = hexToBigint(response.n);
       this.serverE = hexToBigint(response.e);
     })
-
   }
 
-  checkRepudiationAsnwers = () => {
-  let noAnwser: Boolean = false;
+  checkRepudiationAnswers = () => {
+  let noAnswer: Boolean = false;
   let i :number = 0;
-    while (i < this.selectedUsers.length && !noAnwser ){
+    while (i < this.selectedUsers.length && !noAnswer ){
       if(typeof this.selectedUsers[i].Pr == 'undefined') {
-        noAnwser = true;
+        noAnswer = true;
         break;
       }
       i++;
     }
-    return noAnwser;
-
-  // this.selectedUsers.forEach(selectedUser => {
-  //   console.log('selected users.Pr', selectedUser.Pr);
-  //     if(typeof selectedUser.Pr !== 'undefined') {
-  //       noAnwser = true;
-  //       return noAnwser;
-  //     }
-  //   });
-  //   return noAnwser;
+    return noAnswer;
   }
-
 
   resetTimer = () => {
     this.TIME = 60;
@@ -101,9 +90,8 @@ export class InheritanceComponent implements OnInit {
   }
 
   startTimer = () => {
-    let noAnwser: Boolean = true;
     this.interval = setInterval(() => {
-      if(this.TIME > 0 && this.checkRepudiationAsnwers()) {
+      if(this.TIME > 0 && this.checkRepudiationAnswers()) {
         this.TIME--;
       }
       else {
@@ -113,7 +101,7 @@ export class InheritanceComponent implements OnInit {
   }
 
   toggleDivDisplay = (div: string) => {
-    var x = document.getElementById(div);
+    let x = document.getElementById(div);
     if (x.style.display === "none") {
       x.style.display = "block";
     } else {
@@ -182,9 +170,10 @@ export class InheritanceComponent implements OnInit {
 
   deselectUser(username: string){
     for(let i = 0; i<this.selectedUsers.length; i++){
-      if(this.selectedUsers[i].user.username === username)
+      if(this.selectedUsers[i].user.username === username){
         this.selectedUsers.splice(i, 1);
-      break;
+        break;
+      }
     }
   }
 
@@ -208,8 +197,8 @@ export class InheritanceComponent implements OnInit {
     })
 
     //Start no repudiation with each selected user
-    this.selectedUsers.forEach((selectedUser, index)=>{
-      this.startNonRepudiableMessage(selectedUser);
+    this.selectedUsers.forEach((selectedUser)=>{
+      let ignore = this.startNonRepudiableMessage(selectedUser);
     })
     this.toggleDivDisplay("timer");
     this.startTimer();
@@ -218,9 +207,9 @@ export class InheritanceComponent implements OnInit {
   handlePrivateMessages() {
     this.ChatService.privateMessages().subscribe((message: any) => {
       if (message.messageType === 'noRepudiation1') {
-        this.answerNonRepudiableMessage(message);
+        let ignore = this.answerNonRepudiableMessage(message);
       } else if (message.messageType === 'noRepudiation2') {
-        this.publishNoRepudiationMessage(message);
+        let ignore = this.publishNoRepudiationMessage(message);
       }
     });
   }
@@ -300,8 +289,9 @@ export class InheritanceComponent implements OnInit {
     });
     confirmationDialog.beforeClosed().subscribe(async result=>{
       // If message wants to be received, continue with no repudiation otherwise do nothing
-      if(result === 'accept')
-        this.continueAnswerNoRepudiation(message);
+      if(result === 'accept'){
+        let ignore = this.continueAnswerNoRepudiation(message);
+      }
     });
   }
 
@@ -416,8 +406,6 @@ export class InheritanceComponent implements OnInit {
       }
       else if(message.body.destination2 == this.username) {
         // Bob
-        // this.Pkp = hexToBigint(message.signature);
-
         //  Convert iv: string to iv: Uint8Array
         let str = message.body.k.iv;
         let buf = new ArrayBuffer(str.length); // 2 bytes for each char
@@ -437,7 +425,7 @@ export class InheritanceComponent implements OnInit {
             username: message.body.destination, message: msg, modulus: message.body.modulus,
           threshold: message.body.threshold}
         });
-        dialogRef.afterClosed().subscribe(result=>{
+        dialogRef.afterClosed().subscribe(()=>{
           console.log('Closed pop up')
         });
       }
