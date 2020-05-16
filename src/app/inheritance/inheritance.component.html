@@ -1,0 +1,74 @@
+<div class="layout-row" style="overflow: hidden">
+  <mat-grid-list cols="3"  rowHeight="650px" >
+    <mat-grid-tile style="width: 100%">
+      <div style="height: 100%">
+      <div style="position: relative">
+        <mat-card style="margin: 5%; background-color: #673ab747;">
+          <mat-form-field style="margin-left: 1%">
+            <label> Username:
+              <input style="margin-bottom: 5%" [(ngModel)]="username" matInput>
+            </label>
+          </mat-form-field>
+          <button style="margin-left: 5%" [disabled]="lockLoginButton" (click)=login() mat-raised-button>Login</button>
+        </mat-card>
+      </div>
+      <div style="position: absolute; height: 100%; width: 100%">
+        <mat-card class="mat-figure" style="background-color: #673ab747; height: 100%; margin: 5%; align-items: baseline">
+          <mat-list style="width: 80%">
+            <mat-card-subtitle>Users connected</mat-card-subtitle>
+            <div *ngFor="let user of connectedUserList">
+              <mat-card *ngIf="checkIfSelected(user); else selected" style="background-color: #673ab7">
+                <mat-list-item>
+                  {{user.username}}
+                </mat-list-item>
+              </mat-card>
+              <ng-template #selected>
+                <mat-card style="background: #673ab747">
+                  <mat-list-item (click)="selectUser(user)" >
+                    {{user.username}}
+                  </mat-list-item>
+                </mat-card>
+              </ng-template>
+            </div>
+          </mat-list>
+        </mat-card>
+      </div>
+      </div>
+    </mat-grid-tile>
+    <mat-grid-tile colspan="2" style="align-content: flex-start;  align-items: flex-start; width: 100%">
+      <div class="mat-figure" style="align-items: flex-start">
+        <mat-card style="margin-top: 0%; align-items: center; width: 100%; height: 100%; margin-left: 1% ; background-color: #673ab747">
+          <mat-form-field>
+            <input [(ngModel)]="t" matInput placeholder="t">
+          </mat-form-field>
+          <div id="timer" class="timer" style="display: none;">
+            Waiting for response: {{TIME}}
+          </div>
+          <mat-card style="margin-top: 1%; margin-bottom: 2%; background-color: #673ab747">
+            <mat-form-field style="width: 100%">
+                 <textarea #autosize="cdkTextareaAutosize"
+                           [(ngModel)]="walletSecret"
+                           cdkAutosizeMaxRows="5"
+                           cdkAutosizeMinRows="3"
+                           cdkTextareaAutosize
+                           matInput></textarea>
+            </mat-form-field>
+            <button mat-raised-button (click)="start()">Start</button>
+            <button mat-raised-button (click)="publish()">Publish</button>
+          </mat-card>
+          <div *ngFor="let user of selectedUsers">
+            <mat-list-item>
+              <mat-card>
+                {{user.user.username}}
+                <mat-icon *ngIf="user.Pr; else clear">check_circle</mat-icon>
+                <mat-icon *ngIf="user.Pkp; else clear">check_circle</mat-icon>
+                <ng-template #clear><mat-icon>clear</mat-icon></ng-template>
+                <mat-icon (click)="deselectUser(user.user.username)" aria-hidden="false" aria-label="Delete point">delete</mat-icon>
+              </mat-card>  
+            </mat-list-item>
+          </div>
+        </mat-card>
+      </div>
+    </mat-grid-tile>
+  </mat-grid-list>
+</div>

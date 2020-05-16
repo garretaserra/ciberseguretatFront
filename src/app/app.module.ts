@@ -25,6 +25,8 @@ import { SecretSharingComponent } from './secret-sharing/secret-sharing.componen
 import { GeneratorComponent } from './secret-sharing/generator/generator.component';
 import { InterpolatorComponent } from './secret-sharing/interpolator/interpolator.component';
 import {CommonModule} from "@angular/common";
+import { InheritanceComponent } from './inheritance/inheritance.component';
+import { InheritanceConfirmationPopUpComponent } from './inheritance-confirmation-pop-up/inheritance-confirmation-pop-up.component';
 
 @NgModule({
   declarations: [
@@ -33,7 +35,9 @@ import {CommonModule} from "@angular/common";
     HomomorphismComponent,
     SecretSharingComponent,
     GeneratorComponent,
-    InterpolatorComponent
+    InterpolatorComponent,
+    InheritanceComponent,
+    InheritanceConfirmationPopUpComponent
   ],
   imports: [
     BrowserModule,

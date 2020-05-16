@@ -60,9 +60,9 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    this.handleNewUsers();
-    this.handlePrivateMessages();
-    this.handlePublishedMessages();
+    // this.handleNewUsers();
+    // this.handlePrivateMessages();
+    // this.handlePublishedMessages();
   }
 
   async getButton() {

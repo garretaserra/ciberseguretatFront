@@ -1,6 +1,7 @@
 import {Injectable} from '@angular/core';
 import BigNumber from 'bignumber.js';
 import {IPoint} from '../models/ipoint';
+import * as cryptoUtils from 'bigint-crypto-utils';
 
 // import { compileBaseDefFromMetadata } from '@angular/compiler';
 
@@ -12,21 +13,14 @@ export class ShamirsSecretService {
   constructor( ) {
   }
 
-  /*
-  * Generates t random coefficients
-  */
-  private setCoefficients = (t: number, modulus: BigNumber) => {
-    let coefficients: BigNumber[] = [];
+  public getPoints = (n: number, t: number, modulus: BigNumber, secret: string): IPoint<string>[] => {
+    let points: IPoint<string>[] = [];
+
+    // Generate random coefficients
+    const coefficients: BigNumber[] = [(new BigNumber(secret))]; // First coefficient will be the secret
     while(coefficients.length < t){
       coefficients.push(this.randomBigNum(modulus));
     }
-    console.log('Coefficients', coefficients.toString());
-    return coefficients;
-  }
-
-  public getPoints = (n: number, t: number, modulus: BigNumber): IPoint<string>[] => {
-    let points: IPoint<string>[] = [];
-    const coefficients: BigNumber[] = this.setCoefficients(t, modulus);
     const _n = BigInt(n);
 
     for (let i: number = 0; i < _n; i++) {
@@ -36,10 +30,10 @@ export class ShamirsSecretService {
       coefficients.forEach((coef, exponent) => {
         let p = x.pow(exponent, modulus);
         let m = coef.multipliedBy(p);
-        y = y.plus(m).mod(modulus);
-        // console.log('coef', coef.toString(), '\nexp', exponent.toString(), '\nx', x.toString(), '\np', p.toString(), '\nm', m.toString(), '\ny', y.toString())
+        y = y.plus(m).modulo(modulus);
       });
-      points.push({ x: x.toString(), y: y.toString()});
+      // console.log(typeof y, y.toFixed(), BigNumber.isBigNumber(y), (new BigNumber(y)).toFixed(), y);
+      points.push({ x: x.toFixed(), y: y.toFixed()});
     }
     return points;
   }
@@ -71,7 +65,6 @@ export class ShamirsSecretService {
 
   // Returns an integer BigNumber between 0 and mod
   public randomBigNum(mod: BigNumber): BigNumber{
-    let numLength = mod.toString().length + 1;
-    return BigNumber.random(numLength).multipliedBy(10**numLength).mod(mod);
+    return new BigNumber(cryptoUtils.primeSync(1024, 5).toString())
   }
 }
