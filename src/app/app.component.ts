@@ -59,6 +59,7 @@ export class AppComponent {
     this.rsa = new my_rsa();
   }
 
+  // These functions should be called only once in the project, alternate with inheritance.component.ts
   ngOnInit() {
     // this.handleNewUsers();
     // this.handlePrivateMessages();
