@@ -216,9 +216,9 @@ export class InheritanceComponent implements OnInit {
   async startNonRepudiableMessage(user: NoRepudiationUser) {
     // Encrypt the message
     const iv = await window.crypto.getRandomValues(new Uint8Array(16));
-    const jwk = await AESCBCModule.generateKey(); // Generated key in jwk format
-    let key = await crypto.subtle.exportKey('jwk', jwk); // Export generated key
-    let c: bigint = await AESCBCModule.encryptMessage(user.c, jwk, iv); // Blind Message
+    const randomKey = await AESCBCModule.generateKey(); // Generated key
+    let exportedKey: string = bufToHex(await crypto.subtle.exportKey('raw', randomKey)); // Export generated key
+    let c: bigint = await AESCBCModule.encryptMessage(user.c, randomKey, iv); // Blind Message
 
     // Encrypt blinded message with Bob's public key
     c = my_rsa.encrypt(c, hexToBigint(user.user.publicKey.e), hexToBigint(user.user.publicKey.n));
@@ -226,7 +226,7 @@ export class InheritanceComponent implements OnInit {
 
     // Save Key. Key is formed by k and iv.
     user.symKey = {
-      k: key.k,
+      k: exportedKey,
       iv: bufToHex(iv) // Convert iv to String
     };
 
@@ -408,9 +408,9 @@ export class InheritanceComponent implements OnInit {
         //  Convert iv: string to iv: Uint8Array
         let iv = hexToBuf(message.body.k.iv);
 
-        const key = message.body.k.k;
-        const jwk = await AESCBCModule.importKey(key);
-        const m = await AESCBCModule.decryptMessage(this.c, jwk, iv);
+        const exportedKey = hexToBuf(message.body.k.k);
+        const key = await crypto.subtle.importKey('raw', exportedKey,"AES-CBC",true, ["encrypt", "decrypt"]);
+        const m = await AESCBCModule.decryptMessage(this.c, key, iv);
         let msg = bufToText(m);
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
           width: '800px',
