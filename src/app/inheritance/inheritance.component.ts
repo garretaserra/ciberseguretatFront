@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {User} from "../models/User";
-import {bigintToHex, bufToText, hexToBigint} from "bigint-conversion";
+import {bigintToHex, bufToBigint, bufToHex, bufToText, hexToBigint, hexToBuf} from "bigint-conversion";
 import {MatDialog} from "@angular/material/dialog";
 import {MatSnackBar} from "@angular/material/snack-bar";
 import {GeneralService} from "../services/general.service";
@@ -134,6 +134,7 @@ export class InheritanceComponent implements OnInit {
       alert('No username specified');
       return;
     }
+    this.lockLoginButton = true;
     while(!this.rsa.publicKey.e || ! this.rsa.publicKey.n){
       await this.delay(500);
     }
@@ -141,8 +142,6 @@ export class InheritanceComponent implements OnInit {
       {e: bigintToHex(this.rsa.publicKey.e), n: bigintToHex(this.rsa.publicKey.n)}
       ));
     this.snackBar.open('Logged in','ok', {duration: 1000});
-    this.lockLoginButton = true;
-    // this.toggleDivDisplay('timer');
   }
 
   selectUser(user) {
@@ -420,9 +419,9 @@ export class InheritanceComponent implements OnInit {
         const m = await AESCBCModule.decryptMessage(this.c, jwk, iv);
         let msg = bufToText(m);
         const dialogRef = this.dialog.open(NoRepudiationPopUpComponent, {
-          width: '500px',
+          width: '800px',
           data: {Po: bigintToHex(this.Po), Pkp: bigintToHex(message.signature),
-            username: message.body.destination, message: msg, modulus: message.body.modulus,
+            username: message.body.destination, message: msg.toString(), modulus: message.body.modulus,
           threshold: message.body.threshold}
         });
         dialogRef.afterClosed().subscribe(()=>{
