@@ -227,7 +227,7 @@ export class InheritanceComponent implements OnInit {
     // Save Key. Key is formed by k and iv.
     user.symKey = {
       k: key.k,
-      iv: String.fromCharCode.apply(null, iv) // Convert iv to String
+      iv: bufToHex(iv) // Convert iv to String
     };
 
     // Get timestamp
@@ -406,13 +406,7 @@ export class InheritanceComponent implements OnInit {
       else if(message.body.destination2 == this.username) {
         // Bob
         //  Convert iv: string to iv: Uint8Array
-        let str = message.body.k.iv;
-        let buf = new ArrayBuffer(str.length); // 2 bytes for each char
-        let bufView = new Uint8Array(buf);
-        for (let i = 0, strLen = str.length; i < strLen; i++) {
-          bufView[i] = str.charCodeAt(i);
-        }
-        let iv = bufView;
+        let iv = hexToBuf(message.body.k.iv);
 
         const key = message.body.k.k;
         const jwk = await AESCBCModule.importKey(key);
